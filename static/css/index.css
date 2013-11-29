@@ -266,3 +266,6 @@ body .wrap .banner .center .main .main-wrap .share p .share-douban {
 body .wrap .banner .center .main .main-wrap .share p .share-clipboard {
   color: #BBBBBB;
 }
+body iframe.hidden {
+  display: none;
+}

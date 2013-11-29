@@ -7,12 +7,20 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 
+var routes = {
+
+	mainPage: require('./routes/main-page'),
+	lyrics: require('./routes/lyrics')
+};
+
 
 // 应用初始化
+
 var app = express();
 
 
 // 环境配置
+
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -30,6 +38,7 @@ app.enable('trust proxy');
 
 
 // 调试模式
+
 if ('development' == app.get('env')) {
 
 	app.use(express.errorHandler());
@@ -38,13 +47,12 @@ if ('development' == app.get('env')) {
 
 // 路径映射
 
-app.get('/', function (req, res) {
-
-	res.render('index');
-});
+app.get('/', routes.mainPage);
+app.post('/', routes.lyrics);
 
 
 // 启动应用
+
 http.createServer(app).listen(app.get('port'), function () {
 
 	console.log('DoubanLRC listening on port ' + app.get('port'));

@@ -11,13 +11,6 @@
 		var shareFold = document.getElementById('share-fold');
 
 
-		lyricList.addEventListener('mousewheel', function (event) {
-
-			event.preventDefault();
-			event.stopPropagation();
-		});
-
-
 		// 自动根据窗口大小调整wrap的高度
 
 		var autoSize = function (event) {
@@ -32,6 +25,12 @@
 		// 歌词框控制
 
 		var lyricsBox = new LyricsBox(lyricsWrap, lyricsSlide, lyricList, selectArea);
+
+		lyricList.addEventListener('mousewheel', function (event) {
+
+			event.preventDefault();
+			event.stopPropagation();
+		});
 
 		for (var index = 0; index < lyricList.children.length; index++) {
 
@@ -82,6 +81,26 @@
 			lyricsBox.cancelSelect();
 
 			shareBox.classList.add('hidden');
+		});
+
+
+		// Ajax测试
+
+		window.addEventListener('message', function (event) {
+
+			console.log(event.data);
+
+			Ajax.post({
+
+				url: '/',
+				data: event.data,
+				responseType: 'json',
+
+				onsuccess: function (event) {
+
+					console.log(event.response);
+				}
+			});
 		});
 	});
 
