@@ -1,14 +1,20 @@
 {
   "name": "douban-lrc",
+  "author": "JustDs <i@justds.me>",
   "description": "豆瓣LRC",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node douban-lrc.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JustDs/douban-lrc.git"
+  },
   "dependencies": {
     "express": "3.4.5",
     "ejs": "*",
     "less-middleware": "*"
-  }
+  },
+  "license": "MIT"
 }

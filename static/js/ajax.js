@@ -49,8 +49,10 @@ Ajax = (function () {
 				if (status >= 200 && status < 300 || status === 304) {
 
 					var response = xhr.response;
-					var length = response.length || response.size || 0;
+					var length = 0;
 					var responseUrl = '';
+
+					if (response) length = response.length || response.size || 0;
 
 					if (options.responseType === 'json') {
 

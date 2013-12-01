@@ -5,24 +5,38 @@
 
 LyricsBox = (function () {
 
-	function LyricsBox(lyricsWrap, lyricsSlide, lyricList, selectArea) {
+	function LyricsBox(lyricsWrap, lyricsSlide, lyricList, selectArea, onselect) {
 
-		this.lyricsWrap = lyricsWrap;
-		this.lyricsSlide = lyricsSlide;
-		this.lyricList = lyricList;
-		this.selectArea = selectArea;
+		var lyricsBox = this;
 
-		// 为每行歌词元素计算位置偏移量信息
-		
-		for (var index = 0; index < lyricList.children.length; index++) {
+		lyricsBox.lyricsWrap = lyricsWrap;
+		lyricsBox.lyricsSlide = lyricsSlide;
+		lyricsBox.lyricList = lyricList;
+		lyricsBox.selectArea = selectArea;
+		lyricsBox.onselect = onselect;
 
-			var lyricItem = lyricList.children[index];
+		lyricsBox.cache = [];
 
-			lyricItem.offsetBottom = lyricList.clientHeight
-				- lyricItem.offsetTop - lyricItem.clientHeight;
-			lyricItem.offsetMidline = lyricItem.offsetTop
-				+ lyricItem.clientHeight / 2;
-		}
+		lyricList.addEventListener('mousewheel', function (event) {
+
+			event.preventDefault();
+			event.stopPropagation();
+		});
+
+		lyricList.addEventListener('mousemove', function (event) {
+
+			lyricsBox.resizeSelectArea(event.layerY, event.y);
+		});
+
+		window.addEventListener('mouseup', function (event) {
+
+			if (event.button === 0) {
+
+				lyricsBox.stopHover();
+
+				lyricsBox.stopSelect();
+			}
+		});
 	}
 
 	LyricsBox.prototype = {
@@ -53,12 +67,21 @@ LyricsBox = (function () {
 		selectArea: null,
 
 		/**
+		 * 歌词缓存
+		 */
+		cache: null,
+
+		/**
 		 * 当前歌词序号
 		 */
 		currentIndex: 0,
 
 		/**
 		 * 选择状态
+		 *  'none' - 未选择
+		 *  'hover' - 准备选择
+		 *  'selecting' - 正在选择
+		 *  'selected' - 已选择
 		 */
 		selectState: 'none',
 
@@ -73,19 +96,114 @@ LyricsBox = (function () {
 		selectEndItem: null,
 
 		/**
-		 * 滚动到指定行的歌词
+		 * 当歌词被选中时触发该句柄
 		 */
-		scrollTo: function (index) {
+		onselect: null,
+
+		/**
+		 * 向歌词缓存中添加一行歌词
+		 */
+		append: function (item) {
+
+			var lyricsBox = this;
+
+			var element = document.createElement('li');
+
+			element.innerHTML = item.lyric;
+
+			if (item.lyric === '') element.classList.add('blank');
+
+			element.addEventListener('mousedown', function (event) {
+
+				event.preventDefault();
+
+				if (event.button === 0) {
+
+					lyricsBox.startHover(event.target, event.offsetY);
+				}
+			});
+
+			element.addEventListener('mouseleave', function (event) {
+
+				lyricsBox.stopHover();
+			});
+
+			lyricsBox.cache.push(element);
+		},
+
+		/**
+		 * 从歌词缓存中刷新歌词框中的歌词
+		 */
+		refresh: function () {
 
 			var lyricsBox = this;
 
 			if (lyricsBox.selectState === 'none') {
 
-				lyricsBox.currentIndex = index;
+				lyricsBox.lyricList.innerHTML = '';
 
-				var lyricItem = lyricsBox.lyricList.children[index];
+				if (lyricsBox.cache.length > 0) {
 
-				lyricsBox.lyricsSlide.style.top = (320 - lyricItem.offsetMidline) + 'px';
+					lyricsBox.cache.forEach(function (lyricElement) {
+
+						lyricsBox.lyricList.appendChild(lyricElement);
+					});
+
+					for (var index = 0; index < lyricsBox.lyricList.children.length; index++) {
+
+						var lyricElement = lyricsBox.lyricList.children[index];
+
+						lyricElement.offsetBottom = lyricsBox.lyricList.clientHeight -
+							lyricElement.offsetTop - lyricElement.clientHeight;
+						lyricElement.offsetMidline = lyricElement.offsetTop +
+							lyricElement.clientHeight / 2;
+					}
+
+					lyricsBox.scrollTo(lyricsBox.currentIndex);
+
+				} else {
+
+					;
+				}
+			}
+		},
+
+		/**
+		 * 清空歌词缓存
+		 */
+		clear: function () {
+
+			var lyricsBox = this;
+
+			lyricsBox.cache = [];
+		},
+
+		/**
+		 * 滚动到指定行的歌词
+		 */
+		scrollTo: function (lyricIndex) {
+
+			var lyricsBox = this;
+
+			lyricsBox.currentIndex = lyricIndex;
+
+			if (lyricsBox.selectState === 'none') {
+
+				for (var index = 0; index < lyricsBox.lyricList.children.length; index++) {
+
+					var lyricElement = lyricsBox.lyricList.children[index];
+
+					lyricElement.classList.remove('highlight');
+				}
+
+				var lyricElement = lyricsBox.lyricList.children[Math.floor(lyricIndex)];
+
+				lyricElement.classList.add('highlight');
+
+				var offset = lyricElement.offsetMidline + (lyricElement.nextElementSibling.offsetMidline -
+					lyricElement.offsetMidline) * (lyricIndex - Math.floor(lyricIndex));
+
+				lyricsBox.lyricsSlide.style.top = (320 - offset) + 'px';
 			}
 		},
 
@@ -96,7 +214,7 @@ LyricsBox = (function () {
 
 			var lyricsBox = this;
 			
-			lyricsBox.scrollTo(lyricsBox.currentIndex + 1);
+			lyricsBox.scrollTo(Math.floor(lyricsBox.currentIndex + 1));
 		},
 
 		/**
@@ -122,6 +240,7 @@ LyricsBox = (function () {
 				lyricsBox.selectState = 'hover';
 
 				lyricsBox.selectStartItem = item;
+				lyricsBox.selectEndItem = item;
 
 				lyricsBox.setSelectArea(
 					lyricsBox.selectStartItem.offsetTop + cursorOffset,
@@ -146,6 +265,8 @@ LyricsBox = (function () {
 			if (lyricsBox.selectState === 'hover') {
 
 				lyricsBox.selectState = 'none';
+
+				lyricsBox.refresh();
 			}
 		},
 
@@ -173,11 +294,25 @@ LyricsBox = (function () {
 		/**
 		 * 改变选择区域范围大小
 		 */
-		resizeSelectArea: function (cursorOffset) {
+		resizeSelectArea: function (cursorOffset, cursorOffsetToWindow) {
 
 			var lyricsBox = this;
 
 			if (lyricsBox.selectState === 'selecting') {
+
+				if (cursorOffsetToWindow < 80
+				 && lyricsBox.selectEndItem !== lyricsBox.lyricList.firstElementChild) {
+
+					lyricsBox.lyricsSlide.style.top =
+						(parseInt(lyricsBox.lyricsSlide.style.top) + 4) + 'px';
+				}
+
+				if (window.innerHeight - cursorOffsetToWindow < 80
+				 && lyricsBox.selectEndItem !== lyricsBox.lyricList.lastElementChild) {
+
+					lyricsBox.lyricsSlide.style.top =
+						(parseInt(lyricsBox.lyricsSlide.style.top) - 4) + 'px';
+				}
 
 				if (cursorOffset < lyricsBox.selectStartItem.offsetMidline) {
 
@@ -233,6 +368,21 @@ LyricsBox = (function () {
 					lyricsBox.selectStartItem.offsetTop, lyricsBox.selectEndItem.offsetTop)) + 'px';
 
 				lyricsBox.lyricsWrap.classList.remove('selecting');
+
+				var selectContent = [];
+
+				for (var lyricElement = lyricsBox.selectStartItem;
+					lyricElement; lyricElement = lyricElement.nextElementSibling) {
+
+					selectContent.push(lyricElement.innerHTML);
+
+					if (lyricElement === lyricsBox.selectEndItem) break;
+				}
+
+				if (lyricsBox.onselect) lyricsBox.onselect({
+					target: lyricsBox,
+					content: selectContent.join(' ')
+				});
 			}
 		},
 
@@ -248,6 +398,8 @@ LyricsBox = (function () {
 				lyricsBox.selectState = 'none';
 
 				lyricsBox.selectArea.classList.add('hidden');
+
+				lyricsBox.refresh();
 			}
 		}
 

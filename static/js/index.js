@@ -24,54 +24,15 @@
 
 		// 歌词框控制
 
-		var lyricsBox = new LyricsBox(lyricsWrap, lyricsSlide, lyricList, selectArea);
+		var lyricsBox = new LyricsBox(lyricsWrap, lyricsSlide,lyricList, selectArea, function (event) {
 
-		lyricList.addEventListener('mousewheel', function (event) {
+			console.log(event.content);
 
-			event.preventDefault();
-			event.stopPropagation();
-		});
+			setTimeout(function () {
 
-		for (var index = 0; index < lyricList.children.length; index++) {
+				shareBox.classList.remove('hidden');
 
-			lyricList.children[index].addEventListener('mousedown', function (event) {
-
-				event.preventDefault();
-
-				if (event.button === 0) {
-
-					lyricsBox.startHover(event.target, event.offsetY);
-				}
-			});
-
-			lyricList.children[index].addEventListener('mouseleave', function (event) {
-
-				lyricsBox.stopHover();
-			});
-		}
-
-		lyricList.addEventListener('mousemove', function (event) {
-
-			lyricsBox.resizeSelectArea(event.layerY);
-		});
-
-		wrap.addEventListener('mouseup', function (event) {
-
-			if (event.button === 0) {
-
-				if (lyricsBox.selectState === 'selecting') {
-
-					setTimeout(function () {
-
-							shareBox.classList.remove('hidden');
-
-					}, 500);
-				}
-
-				lyricsBox.stopHover();
-
-				lyricsBox.stopSelect();
-			}
+			}, 500);
 		});
 
 		shareFold.addEventListener('click', function (event) {
@@ -83,23 +44,84 @@
 			shareBox.classList.add('hidden');
 		});
 
+		f = function (argument) {
+
+			lyricsBox.scrollTo(argument);
+		};
+
 
 		// Ajax测试
-
-		window.addEventListener('message', function (event) {
-
-			console.log(event.data);
+		
+		function requestLyrics(fmInfo, callback) {
 
 			Ajax.post({
 
 				url: '/',
-				data: event.data,
+				data: fmInfo,
 				responseType: 'json',
 
 				onsuccess: function (event) {
 
-					console.log(event.response);
+					if (callback) callback(event.response);
+				},
+
+				onerror: function (event) {
+
+					if (callback) callback(null);
 				}
+			});
+		}
+
+		window.addEventListener('message', function (event) {
+
+			var message = {};
+
+			try {
+
+				message = JSON.parse(event.data);
+
+			} catch (err) {
+
+				message = {};
+			}
+
+			var fmInfo = {
+				songId: message.id,
+				artist: message.artist,
+				title: message.song_name,
+				album: message.album,
+				albumImgUrl: message.cover,
+				timestamp: message.timestamp,
+				channel: message.channel,
+				shareUrl: message.url
+			};
+
+			console.log(fmInfo);
+
+			requestLyrics(fmInfo, function (fullInfo) {
+
+				lyricsBox.clear();
+
+				if (fullInfo) {
+
+					console.log(fullInfo);
+
+					var lyrics = fullInfo.lyrics || [];
+
+					lyrics.sort(function (item1, item2) {
+
+						return item1.time - item2.time;
+					});
+
+					lyrics.forEach(function (item) {
+
+						lyricsBox.append(item);
+					});
+				}
+
+				lyricsBox.refresh();
+
+				lyricsBox.scrollTo(0);
 			});
 		});
 	});
