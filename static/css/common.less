@@ -402,3 +402,18 @@
 	-o-transition+: @transition;
 	transition+: @transition;
 }
+
+.selection (@background: auto, @color: auto)
+{
+	&::-moz-selection
+	{
+		color: @color;
+		background: @background;
+	}
+	
+	&::selection
+	{
+		color: @color;
+		background: @background;
+	}
+}
