@@ -18,7 +18,7 @@
 			wrap.style.height = window.innerHeight + 'px';
 		};
 
-		window.addEventListener(autoSize);
+		window.addEventListener('resize', autoSize);
 		autoSize();
 
 
@@ -43,11 +43,6 @@
 
 			shareBox.classList.add('hidden');
 		});
-
-		f = function (argument) {
-
-			lyricsBox.scrollTo(argument);
-		};
 
 
 		// Ajax测试
@@ -91,13 +86,12 @@
 				title: message.song_name,
 				album: message.album,
 				albumImgUrl: message.cover,
-				timestamp: message.timestamp,
+				startTime: message.timestamp,
 				channel: message.channel,
 				shareUrl: message.url
 			};
 
 			console.log(fmInfo);
-
 			requestLyrics(fmInfo, function (fullInfo) {
 
 				lyricsBox.clear();
@@ -106,12 +100,15 @@
 
 					console.log(fullInfo);
 
-					var lyrics = fullInfo.lyrics || [];
+					var lyrics = fullInfo.lyricsInfo.lyrics || [];
 
 					lyrics.sort(function (item1, item2) {
 
 						return item1.time - item2.time;
 					});
+
+					lyricsBox.overallOffset = 0;
+					lyricsBox.setStartTime(parseInt(fullInfo.lyricsInfo.startTime));
 
 					lyrics.forEach(function (item) {
 
@@ -119,11 +116,24 @@
 					});
 				}
 
-				lyricsBox.refresh();
+				lyricsBox.update();
 
 				lyricsBox.scrollTo(0);
 			});
 		});
+
+		var mousewheel = function (event) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+
+			lyricsBox.overallOffset += delta * 400;
+		};
+
+		lyricsWrap.addEventListener('DOMMouseScroll', mousewheel);
+		lyricsWrap.addEventListener('mousewheel', mousewheel);
 	});
 
 })();

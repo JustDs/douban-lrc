@@ -15,17 +15,18 @@ LyricsBox = (function () {
 		lyricsBox.selectArea = selectArea;
 		lyricsBox.onselect = onselect;
 
-		lyricsBox.cache = [];
-
-		lyricList.addEventListener('mousewheel', function (event) {
-
-			event.preventDefault();
-			event.stopPropagation();
-		});
+		lyricsBox.lyricsInfo = {
+			startTime: new Date().getTime(),
+			lyrics: []
+		};
+		lyricsBox.lyricsInfoCache = {
+			startTime: new Date().getTime(),
+			lyrics: []
+		};
 
 		lyricList.addEventListener('mousemove', function (event) {
 
-			lyricsBox.resizeSelectArea(event.layerY, event.y);
+			lyricsBox.resizeSelectArea(event.layerY, event.clientY);
 		});
 
 		window.addEventListener('mouseup', function (event) {
@@ -37,6 +38,12 @@ LyricsBox = (function () {
 				lyricsBox.stopSelect();
 			}
 		});
+
+		setInterval(function () {
+
+			lyricsBox.refresh();
+
+		}, 50);
 	}
 
 	LyricsBox.prototype = {
@@ -67,14 +74,24 @@ LyricsBox = (function () {
 		selectArea: null,
 
 		/**
-		 * 歌词缓存
+		 * 歌词的全局时间偏移量
 		 */
-		cache: null,
+		overallOffset: 0,
 
 		/**
-		 * 当前歌词序号
+		 * 歌词信息
 		 */
-		currentIndex: 0,
+		lyricsInfo: null,
+
+		/**
+		 * 歌词信息缓存
+		 */
+		lyricsInfoCache: null,
+
+		/**
+		 * 当前歌词位置
+		 */
+		currentPosition: 0,
 
 		/**
 		 * 选择状态
@@ -101,65 +118,145 @@ LyricsBox = (function () {
 		onselect: null,
 
 		/**
+		 * 刷新歌词框中歌词位置
+		 */
+		refresh: function () {
+
+			var transitionTime = 0;
+			var transitionOffset = -600;
+			var transitionEasing = function (t) {
+
+				return 0.5 - Math.cos(t * Math.PI) / 2;
+			};
+
+			var lyricsBox = this;
+
+			var time = new Date().getTime() -
+				(lyricsBox.lyricsInfo.startTime + lyricsBox.overallOffset + transitionOffset);
+
+			if (!lyricsBox.lyricsInfo.lyrics.some(function (item, position) {
+
+				var timeOffset = time - item.time;
+				var positionOffset = 0;
+
+				if (!lyricsBox.lyricsInfo.lyrics[position + 1] && time >= item.time) {
+
+					lyricsBox.scrollTo(position);
+
+					return true;
+				}
+
+				if (time >= item.time && time < lyricsBox.lyricsInfo.lyrics[position + 1].time) {
+
+					var duration = lyricsBox.lyricsInfo.lyrics[position + 1].time - item.time;
+
+					if (duration > transitionTime) {
+
+						var easingOffset = timeOffset - (duration - transitionTime);
+
+						if (easingOffset >= 0 && transitionTime > 0) {
+
+							positionOffset = transitionEasing(easingOffset / transitionTime);
+						}
+
+					} else {
+
+						positionOffset = transitionEasing(timeOffset / duration);
+					}
+
+					lyricsBox.scrollTo(position + positionOffset);
+
+					return true;
+				}
+
+				return false;
+
+			})) {
+
+				lyricsBox.scrollTo(0);
+			}
+		},
+
+		/**
 		 * 向歌词缓存中添加一行歌词
 		 */
 		append: function (item) {
 
 			var lyricsBox = this;
 
-			var element = document.createElement('li');
-
-			element.innerHTML = item.lyric;
-
-			if (item.lyric === '') element.classList.add('blank');
-
-			element.addEventListener('mousedown', function (event) {
-
-				event.preventDefault();
-
-				if (event.button === 0) {
-
-					lyricsBox.startHover(event.target, event.offsetY);
-				}
-			});
-
-			element.addEventListener('mouseleave', function (event) {
-
-				lyricsBox.stopHover();
-			});
-
-			lyricsBox.cache.push(element);
+			lyricsBox.lyricsInfoCache.lyrics.push(item);
 		},
 
 		/**
-		 * 从歌词缓存中刷新歌词框中的歌词
+		 * 设置歌词的开始时间
 		 */
-		refresh: function () {
+		setStartTime: function (startTime) {
 
 			var lyricsBox = this;
+
+			lyricsBox.lyricsInfoCache.startTime = startTime || new Date().getTime();
+		},
+
+		/**
+		 * 从歌词缓存中加载歌词
+		 */
+		update: function () {
+
+			var lyricsBox = this;
+
+			lyricsBox.lyricsInfo.startTime = 0;
 
 			if (lyricsBox.selectState === 'none') {
 
 				lyricsBox.lyricList.innerHTML = '';
 
-				if (lyricsBox.cache.length > 0) {
+				lyricsBox.lyricsInfo = {
+					startTime: lyricsBox.lyricsInfoCache.startTime,
+					lyrics: lyricsBox.lyricsInfoCache.lyrics.map(function (item) {
 
-					lyricsBox.cache.forEach(function (lyricElement) {
+						return item;
+					})
+				};
 
-						lyricsBox.lyricList.appendChild(lyricElement);
+				if (lyricsBox.lyricsInfo.lyrics.length > 0) {
+
+					lyricsBox.lyricsInfo.lyrics.forEach(function (item) {
+
+						var element = document.createElement('li');
+
+						element.innerHTML = item.lyric;
+
+						if (item.lyric === '') element.classList.add('blank');
+
+						element.addEventListener('mousedown', function (event) {
+
+							event.preventDefault();
+
+							if (event.button === 0) {
+
+								lyricsBox.startHover(event.target, event.offsetY);
+							}
+						});
+
+						element.addEventListener('mouseleave', function (event) {
+
+							lyricsBox.stopHover();
+						});
+
+						lyricsBox.lyricList.appendChild(element);
 					});
 
 					for (var index = 0; index < lyricsBox.lyricList.children.length; index++) {
 
-						var lyricElement = lyricsBox.lyricList.children[index];
+						var element = lyricsBox.lyricList.children[index];
 
-						lyricElement.offsetBottom = lyricsBox.lyricList.clientHeight -
-							lyricElement.offsetTop - lyricElement.clientHeight;
-						lyricElement.offsetMidline = lyricElement.offsetTop +
-							lyricElement.clientHeight / 2;
+						element.offsetBottom = lyricsBox.lyricList.clientHeight -
+							element.offsetTop - element.clientHeight;
+						element.offsetMidline = element.offsetTop +
+							element.clientHeight / 2;
 					}
 
-					lyricsBox.scrollTo(lyricsBox.currentIndex);
+					lyricsBox.scrollTo();
 
 				} else {
 
@@ -175,33 +272,47 @@ LyricsBox = (function () {
 
 			var lyricsBox = this;
 
-			lyricsBox.cache = [];
+			lyricsBox.lyricsInfoCache = {
+				startTime: new Date().getTime(),
+				lyrics: []
+			};
 		},
 
 		/**
 		 * 滚动到指定行的歌词
 		 */
-		scrollTo: function (lyricIndex) {
+		scrollTo: function (position) {
 
 			var lyricsBox = this;
 
-			lyricsBox.currentIndex = lyricIndex;
+			position = position || lyricsBox.currentPosition;
 
-			if (lyricsBox.selectState === 'none') {
+			lyricsBox.currentPosition = position;
 
-				for (var index = 0; index < lyricsBox.lyricList.children.length; index++) {
+			for (var index = 0; index < lyricsBox.lyricList.children.length; index++) {
 
-					var lyricElement = lyricsBox.lyricList.children[index];
+				var element = lyricsBox.lyricList.children[index];
 
-					lyricElement.classList.remove('highlight');
-				}
+				element.classList.remove('highlight');
+			}
 
-				var lyricElement = lyricsBox.lyricList.children[Math.floor(lyricIndex)];
+			var element = lyricsBox.lyricList.children[Math.floor(position)];
 
-				lyricElement.classList.add('highlight');
+			if (element) {
 
-				var offset = lyricElement.offsetMidline + (lyricElement.nextElementSibling.offsetMidline -
-					lyricElement.offsetMidline) * (lyricIndex - Math.floor(lyricIndex));
+				element.classList.add('highlight');
+			}
+
+			position = Math.min(position, lyricsBox.lyricList.children.length - 1);
+			position = Math.max(position, 0);
+
+			element = lyricsBox.lyricList.children[Math.floor(position)];
+
+			if (element && lyricsBox.selectState === 'none') {
+
+				var offset = element.offsetMidline + ((element.nextElementSibling ||
+					element).offsetMidline - element.offsetMidline) *
+					(position - Math.floor(position));
 
 				lyricsBox.lyricsSlide.style.top = (320 - offset) + 'px';
 			}
@@ -214,7 +325,7 @@ LyricsBox = (function () {
 
 			var lyricsBox = this;
 			
-			lyricsBox.scrollTo(Math.floor(lyricsBox.currentIndex + 1));
+			lyricsBox.scrollTo(Math.floor(lyricsBox.currentPosition + 1));
 		},
 
 		/**
@@ -266,7 +377,7 @@ LyricsBox = (function () {
 
 				lyricsBox.selectState = 'none';
 
-				lyricsBox.refresh();
+				lyricsBox.update();
 			}
 		},
 
@@ -371,12 +482,12 @@ LyricsBox = (function () {
 
 				var selectContent = [];
 
-				for (var lyricElement = lyricsBox.selectStartItem;
-					lyricElement; lyricElement = lyricElement.nextElementSibling) {
+				for (var element = lyricsBox.selectStartItem;
+					element; element = element.nextElementSibling) {
 
-					selectContent.push(lyricElement.innerHTML);
+					selectContent.push(element.innerHTML);
 
-					if (lyricElement === lyricsBox.selectEndItem) break;
+					if (element === lyricsBox.selectEndItem) break;
 				}
 
 				if (lyricsBox.onselect) lyricsBox.onselect({
@@ -399,7 +510,7 @@ LyricsBox = (function () {
 
 				lyricsBox.selectArea.classList.add('hidden');
 
-				lyricsBox.refresh();
+				lyricsBox.update();
 			}
 		}
 
