@@ -3,11 +3,23 @@
 	document.addEventListener('DOMContentLoaded', function (event) {
 
 		var wrap = document.getElementById('wrap');
+
+		var songInfo = document.getElementById('song-info');
+		var title = document.getElementById('title');
+		var artist = document.getElementById('artist');
+		var album = document.getElementById('album');
+		var year = document.getElementById('year');
+
+		var image = document.getElementById('image');
+		var imageWrap = document.getElementById('image-wrap');
+		var imageBackgroud = document.getElementById('image-backgroud');
+
 		var lyricsSlide = document.getElementById('lyrics-slide');
 		var lyricsWrap = document.getElementById('lyrics');
 		var lyricList = document.getElementById('lyric-list');
 		var notice = document.getElementById('notice');
 		var selectArea = document.getElementById('select-area');
+
 		var shareBox = document.getElementById('share');
 		var shareFold = document.getElementById('share-fold');
 
@@ -100,6 +112,39 @@
 				if (fullInfo) {
 
 					console.log(fullInfo);
+
+					var updateSongInfo = function (event) {
+
+						songInfo.removeEventListener('transitionend', updateSongInfo);
+
+						title.innerHTML = fullInfo.songInfo.title;
+						artist.innerHTML = fullInfo.songInfo.artist;
+						album.innerHTML = fullInfo.songInfo.album;
+						year.innerHTML = fullInfo.songInfo.releaseYear;
+
+						songInfo.classList.remove('hidden');
+					};
+
+					if (songInfo.classList.contains('hidden')) {
+
+						updateSongInfo();
+						
+					} else {
+
+						songInfo.classList.add('hidden');
+						songInfo.addEventListener('transitionend', updateSongInfo);
+					}
+
+					image.src = fullInfo.songInfo.albumImgUrl;
+					imageWrap.classList.remove('hidden');
+
+					setTimeout(function () {
+
+						imageBackgroud.style.backgroundImage = 'url(' + image.src + ')';
+
+						imageWrap.classList.add('hidden');
+
+					}, 2000);
 
 					var lyrics = fullInfo.lyricsInfo.lyrics || [];
 
