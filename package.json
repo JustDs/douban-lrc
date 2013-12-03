@@ -15,7 +15,8 @@
     "express": "3.4.5",
     "ejs": "*",
     "less-middleware": "*",
-    "express-uglify": "*"
+    "express-uglify": "*",
+    "request": "*"
   },
   "license": "MIT"
 }
