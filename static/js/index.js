@@ -10,18 +10,17 @@
 		var album = document.getElementById('album');
 		var year = document.getElementById('year');
 
-		var image = document.getElementById('image');
-		var imageWrap = document.getElementById('image-wrap');
 		var imageBackgroud = document.getElementById('image-backgroud');
+		var imageWrap = document.getElementById('image-wrap');
+		var image = document.getElementById('image');
 
-		var lyricsSlide = document.getElementById('lyrics-slide');
 		var lyricsWrap = document.getElementById('lyrics');
+		var lyricsSlide = document.getElementById('lyrics-slide');
 		var lyricList = document.getElementById('lyric-list');
 		var notice = document.getElementById('notice');
 		var selectArea = document.getElementById('select-area');
 
 		var shareBox = document.getElementById('share');
-		var shareFold = document.getElementById('share-fold');
 
 
 		// 自动根据窗口大小调整wrap的高度
@@ -48,19 +47,43 @@
 			}, 500);
 		});
 
-		shareFold.addEventListener('click', function (event) {
+		var mousewheel = function (event) {
 
 			event.preventDefault();
+			event.stopPropagation();
+
+			var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+
+			lyricsBox.overallOffset += delta * 400;
+		};
+
+		lyricsWrap.addEventListener('DOMMouseScroll', mousewheel);
+		lyricsWrap.addEventListener('mousewheel', mousewheel);
+
+
+		// 歌词分享框控制
+
+		var foldShareBox = function (event) {
 
 			lyricsBox.cancelSelect();
 
 			shareBox.classList.add('hidden');
+		};
+
+		wrap.addEventListener('click', function (event) {
+
+			foldShareBox();
+		});
+
+		shareBox.addEventListener('click', function (event) {
+
+			event.stopPropagation();
 		});
 
 
-		// Ajax测试
+		// Ajax请求处理
 		
-		function requestLyrics(fmInfo, callback) {
+		var requestLyrics = function (fmInfo, callback) {
 
 			Ajax.post({
 
@@ -78,7 +101,78 @@
 					if (callback) callback(null);
 				}
 			});
-		}
+		};
+
+
+		// 刷新页面内容
+
+		var refresh = function (fullInfo) {
+
+			lyricsBox.clear();
+
+			if (fullInfo && fullInfo.code === 0) {
+
+				var updateSongInfo = function (event) {
+
+					songInfo.removeEventListener('transitionend', updateSongInfo);
+
+					title.innerHTML = fullInfo.songInfo.title;
+					artist.innerHTML = fullInfo.songInfo.artist;
+					album.innerHTML = fullInfo.songInfo.album;
+					year.innerHTML = fullInfo.songInfo.releaseYear;
+					title.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
+					artist.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
+					album.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
+
+					songInfo.classList.remove('hidden');
+				};
+
+				document.title = '豆瓣LRC - ' + fullInfo.songInfo.title;
+
+				if (songInfo.classList.contains('hidden')) {
+
+					updateSongInfo();
+					
+				} else {
+
+					songInfo.classList.add('hidden');
+					songInfo.addEventListener('transitionend', updateSongInfo);
+				}
+
+				image.src = fullInfo.songInfo.albumImgUrl;
+				imageWrap.classList.remove('hidden');
+
+				setTimeout(function () {
+
+					imageBackgroud.style.backgroundImage = 'url(' + image.src + ')';
+
+					imageWrap.classList.add('hidden');
+
+				}, 2000);
+
+				var lyrics = fullInfo.lyricsInfo.lyrics || [];
+
+				lyrics.sort(function (item1, item2) {
+
+					return item1.time - item2.time;
+				});
+
+				lyricsBox.overallOffset = 0;
+				lyricsBox.setStartTime(parseInt(fullInfo.lyricsInfo.startTime));
+
+				lyrics.forEach(function (item) {
+
+					lyricsBox.append(item);
+				});
+			}
+
+			lyricsBox.update();
+
+			lyricsBox.scrollTo(0);
+		};
+
+
+		// 主流程控制
 
 		window.addEventListener('message', function (event) {
 
@@ -108,84 +202,11 @@
 			
 			requestLyrics(fmInfo, function (fullInfo) {
 
-				lyricsBox.clear();
-
 				console.log(fullInfo);
 
-				if (fullInfo && fullInfo.code === 0) {
-
-					var updateSongInfo = function (event) {
-
-						songInfo.removeEventListener('transitionend', updateSongInfo);
-
-						title.innerHTML = fullInfo.songInfo.title;
-						artist.innerHTML = fullInfo.songInfo.artist;
-						album.innerHTML = fullInfo.songInfo.album;
-						year.innerHTML = fullInfo.songInfo.releaseYear;
-						title.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
-						artist.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
-						album.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
-
-						songInfo.classList.remove('hidden');
-					};
-
-					document.title = '豆瓣LRC - ' + fullInfo.songInfo.title;
-
-					if (songInfo.classList.contains('hidden')) {
-
-						updateSongInfo();
-						
-					} else {
-
-						songInfo.classList.add('hidden');
-						songInfo.addEventListener('transitionend', updateSongInfo);
-					}
-
-					image.src = fullInfo.songInfo.albumImgUrl;
-					imageWrap.classList.remove('hidden');
-
-					setTimeout(function () {
-
-						imageBackgroud.style.backgroundImage = 'url(' + image.src + ')';
-
-						imageWrap.classList.add('hidden');
-
-					}, 2000);
-
-					var lyrics = fullInfo.lyricsInfo.lyrics || [];
-
-					lyrics.sort(function (item1, item2) {
-
-						return item1.time - item2.time;
-					});
-
-					lyricsBox.overallOffset = 0;
-					lyricsBox.setStartTime(parseInt(fullInfo.lyricsInfo.startTime));
-
-					lyrics.forEach(function (item) {
-
-						lyricsBox.append(item);
-					});
-				}
-
-				lyricsBox.update();
-
-				lyricsBox.scrollTo(0);
+				refresh(fullInfo);
 			});
 		});
-
-		var mousewheel = function (event) {
-
-			event.preventDefault();
-			event.stopPropagation();
-
-			var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
-
-			lyricsBox.overallOffset += delta * 400;
-		};
-
-		lyricsWrap.addEventListener('DOMMouseScroll', mousewheel);
-		lyricsWrap.addEventListener('mousewheel', mousewheel);
 	});
 
 })();
