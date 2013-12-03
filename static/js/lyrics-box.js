@@ -27,6 +27,8 @@ LyricsBox = (function () {
 
 		lyricList.addEventListener('mousemove', function (event) {
 
+			lyricsBox.startSelect();
+
 			lyricsBox.resizeSelectArea(event.layerY, event.clientY);
 		});
 
@@ -129,7 +131,7 @@ LyricsBox = (function () {
 		refresh: function () {
 
 			var transitionTime = 0;
-			var transitionOffset = -600;
+			var transitionOffset = 300;
 			var transitionEasing = function (t) {
 
 				return 0.5 - Math.cos(t * Math.PI) / 2;
@@ -377,7 +379,7 @@ LyricsBox = (function () {
 
 					lyricsBox.startSelect();
 
-				}, 1000);
+				}, 850);
 			}
 		},
 
@@ -490,8 +492,8 @@ LyricsBox = (function () {
 
 				lyricsBox.selectState = 'selected';
 
-				lyricsBox.lyricsSlide.style.top = (320 - lyricsBox.lyricList.offsetTop - Math.min(
-					lyricsBox.selectStartItem.offsetTop, lyricsBox.selectEndItem.offsetTop)) + 'px';
+				lyricsBox.lyricsSlide.style.top = (407 - lyricsBox.selectArea.offsetTop -
+					lyricsBox.selectArea.clientHeight * 0.6) + 'px';
 
 				lyricsBox.lyricsWrap.classList.remove('selecting');
 

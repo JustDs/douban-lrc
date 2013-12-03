@@ -122,9 +122,14 @@
 						artist.innerHTML = fullInfo.songInfo.artist;
 						album.innerHTML = fullInfo.songInfo.album;
 						year.innerHTML = fullInfo.songInfo.releaseYear;
+						title.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
+						artist.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
+						album.href = 'http://music.douban.com' + fullInfo.songInfo.albumUrl;
 
 						songInfo.classList.remove('hidden');
 					};
+
+					document.title = '豆瓣LRC - ' + fullInfo.songInfo.title;
 
 					if (songInfo.classList.contains('hidden')) {
 
