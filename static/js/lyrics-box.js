@@ -5,13 +5,14 @@
 
 LyricsBox = (function () {
 
-	function LyricsBox(lyricsWrap, lyricsSlide, lyricList, selectArea, onselect) {
+	function LyricsBox(lyricsWrap, lyricsSlide, lyricList, notice, selectArea, onselect) {
 
 		var lyricsBox = this;
 
 		lyricsBox.lyricsWrap = lyricsWrap;
 		lyricsBox.lyricsSlide = lyricsSlide;
 		lyricsBox.lyricList = lyricList;
+		lyricsBox.notice = notice;
 		lyricsBox.selectArea = selectArea;
 		lyricsBox.onselect = onselect;
 
@@ -67,6 +68,11 @@ LyricsBox = (function () {
 		 * 歌词列表元素
 		 */
 		lyricList: null,
+
+		/**
+		 * 歌词框中通知元素
+		 */
+		notice: null,
 
 		/**
 		 * 选择区域元素
@@ -258,9 +264,13 @@ LyricsBox = (function () {
 
 					lyricsBox.scrollTo();
 
+					lyricsBox.notice.classList.add('hidden');
+
 				} else {
 
-					;
+					lyricsBox.scrollTo(0);
+
+					lyricsBox.notice.classList.remove('hidden');
 				}
 			}
 		},
@@ -285,7 +295,7 @@ LyricsBox = (function () {
 
 			var lyricsBox = this;
 
-			position = position || lyricsBox.currentPosition;
+			if (typeof(position) === 'undefined') position = lyricsBox.currentPosition;
 
 			lyricsBox.currentPosition = position;
 
@@ -308,11 +318,16 @@ LyricsBox = (function () {
 
 			element = lyricsBox.lyricList.children[Math.floor(position)];
 
-			if (element && lyricsBox.selectState === 'none') {
+			if (lyricsBox.selectState === 'none') {
 
-				var offset = element.offsetMidline + ((element.nextElementSibling ||
-					element).offsetMidline - element.offsetMidline) *
-					(position - Math.floor(position));
+				var offset = 0;
+
+				if (element) {
+
+					offset = element.offsetMidline + ((element.nextElementSibling ||
+						element).offsetMidline - element.offsetMidline) *
+						(position - Math.floor(position)) + lyricsBox.lyricList.offsetTop;
+				}
 
 				lyricsBox.lyricsSlide.style.top = (320 - offset) + 'px';
 			}
@@ -335,7 +350,7 @@ LyricsBox = (function () {
 
 			var lyricsBox = this;
 
-			lyricsBox.selectArea.style.top = offsetTop + 'px';
+			lyricsBox.selectArea.style.top = offsetTop + lyricsBox.lyricList.offsetTop + 'px';
 			lyricsBox.selectArea.style.bottom = offsetBottom + 'px';
 		},
 
@@ -475,7 +490,7 @@ LyricsBox = (function () {
 
 				lyricsBox.selectState = 'selected';
 
-				lyricsBox.lyricsSlide.style.top = (320 - Math.min(
+				lyricsBox.lyricsSlide.style.top = (320 - lyricsBox.lyricList.offsetTop - Math.min(
 					lyricsBox.selectStartItem.offsetTop, lyricsBox.selectEndItem.offsetTop)) + 'px';
 
 				lyricsBox.lyricsWrap.classList.remove('selecting');

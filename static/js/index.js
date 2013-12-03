@@ -6,6 +6,7 @@
 		var lyricsSlide = document.getElementById('lyrics-slide');
 		var lyricsWrap = document.getElementById('lyrics');
 		var lyricList = document.getElementById('lyric-list');
+		var notice = document.getElementById('notice');
 		var selectArea = document.getElementById('select-area');
 		var shareBox = document.getElementById('share');
 		var shareFold = document.getElementById('share-fold');
@@ -24,7 +25,7 @@
 
 		// 歌词框控制
 
-		var lyricsBox = new LyricsBox(lyricsWrap, lyricsSlide,lyricList, selectArea, function (event) {
+		var lyricsBox = new LyricsBox(lyricsWrap, lyricsSlide,lyricList, notice, selectArea, function (event) {
 
 			console.log(event.content);
 
