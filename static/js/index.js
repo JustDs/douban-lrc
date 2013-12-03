@@ -105,13 +105,14 @@
 			};
 
 			console.log(fmInfo);
+			
 			requestLyrics(fmInfo, function (fullInfo) {
 
 				lyricsBox.clear();
 
-				if (fullInfo) {
+				console.log(fullInfo);
 
-					console.log(fullInfo);
+				if (fullInfo && fullInfo.code === 0) {
 
 					var updateSongInfo = function (event) {
 

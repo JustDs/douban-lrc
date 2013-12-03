@@ -5,53 +5,57 @@
 
 module.exports = function (req, res) {
 
-	var fmInfo = {
-		songId: null,
-		artist: null,
-		title: null,
-		album: null,
-		albumImgUrl: null,
-		startTime: 0,
-		channel: null,
-		shareUrl: null
-	};
+	(function (response) {
 
-	for (var key in fmInfo) {
+		var fmInfo = {
+			songId: null,
+			artist: null,
+			title: null,
+			album: null,
+			albumImgUrl: null,
+			startTime: 0,
+			channel: null,
+			shareUrl: null
+		};
 
-		if (req.body[key]) {
+		for (var key in fmInfo) {
 
-			fmInfo[key] = req.body[key];
+			if (req.body[key]) {
 
-		} else {
+				fmInfo[key] = req.body[key];
 
-			res.json({
-				errCode: 0
-			});
+			} else {
 
-			return;
-		}
-	};
+				response({
+					code: 1000,
+					fatal: true,
+					message: '请求格式不正确.',
+					details : {}
+				});
 
-	console.log(fmInfo);
+				return;
+			}
+		};
 
-	res.json({
-		songInfo: {
+		console.log(fmInfo);
+
+		var songInfo = {
 			songId: "songId",
 			ssid: "ssid",
-			title: "title",
+			title: fmInfo.title,
 			albumId: "albumId",
-			album: "album",
+			album: "这里是专辑名",
 			albumUrl: "albumUrl",
-			albumImgUrl: "albumImgUrl",
-			artist: "artist",
+			albumImgUrl: fmInfo.albumImgUrl,
+			artist: fmInfo.artist,
 			company: "company",
-			releaseYear: "releaseYear",
+			releaseYear: "2010",
 			rating: "rating",
 			duration: "duration",
 			mp3Url: "mp3Url",
 			startToken: "startToken"
-		},
-		lyricsInfo: {
+		};
+		var lyricsInfo = {
 			startTime: fmInfo.startTime,
 			lyrics: [
 				{ "lyric": "\u9648\u5955\u8fc5 - \u5144\u59b9", "time": 260 },
@@ -83,6 +87,32 @@ module.exports = function (req, res) {
 				{ "lyric": "\u8ba9\u6211\u60f3\u8d77\u66fe\u7ecf\u7231\u8fc7\u8c01", "time": 109140 },
 				{ "lyric": "\u6211\u6240\u8981\u7684\u5979\u4e0d\u7ed9 \u597d\u50cf\u5c0f\u5077\u4e00\u6837\u5351\u5fae", "time": 114230 }
 			]
+		};
+
+		response(null, songInfo, lyricsInfo);
+
+	})(function (err, songInfo, lyricsInfo) {
+
+		if (err) {
+
+			var message = '错误 ' + err.code + ': ' + err.message;
+
+			for (var item in err.details) {
+
+				message += '\n' + item + ': ' + err.details[item];
+			}
+
+			(err.fatal ? console.error : console.warn)(message);
+
+			res.json({ code: err.code });
+
+		} else {
+
+			res.json({
+				code: 0,
+				songInfo: songInfo,
+				lyricsInfo: lyricsInfo
+			});
 		}
 	});
 };
