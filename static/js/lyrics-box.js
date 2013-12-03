@@ -514,7 +514,7 @@ LyricsBox = (function () {
 			}
 		}
 
-	}
+	};
 
 	return LyricsBox;
 

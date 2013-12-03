@@ -135,7 +135,7 @@ Ajax = (function () {
 
 			this.request(options);
 		}
-	}
+	};
 
 	return Ajax;
 
