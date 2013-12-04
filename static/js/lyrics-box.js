@@ -193,6 +193,16 @@ LyricsBox = (function () {
 		},
 
 		/**
+		 * 获取歌词的开始时间
+		 */
+		getStartTime: function () {
+
+			var lyricsBox = this;
+
+			return lyricsBox.lyricsInfoCache.startTime;
+		},
+
+		/**
 		 * 设置歌词的开始时间
 		 */
 		setStartTime: function (startTime) {
@@ -200,6 +210,16 @@ LyricsBox = (function () {
 			var lyricsBox = this;
 
 			lyricsBox.lyricsInfoCache.startTime = startTime || new Date().getTime();
+		},
+
+		/**
+		 * 获取歌词的全局时间偏移量
+		 */
+		getOffset: function () {
+
+			var lyricsBox = this;
+
+			return lyricsBox.lyricsInfoCache.offset;
 		},
 
 		/**

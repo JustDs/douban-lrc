@@ -73,7 +73,7 @@
 
 			var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
 
-			lyricsBox.overallOffset += delta * 400;
+			lyricsBox.setOffset(lyricsBox.getOffset() + delta * 400);
 		};
 
 		lyricsWrap.addEventListener('DOMMouseScroll', mousewheel);
