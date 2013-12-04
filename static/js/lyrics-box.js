@@ -18,10 +18,12 @@ LyricsBox = (function () {
 
 		lyricsBox.lyricsInfo = {
 			startTime: new Date().getTime(),
+			offset: 0,
 			lyrics: []
 		};
 		lyricsBox.lyricsInfoCache = {
 			startTime: new Date().getTime(),
+			offset: 0,
 			lyrics: []
 		};
 
@@ -82,11 +84,6 @@ LyricsBox = (function () {
 		selectArea: null,
 
 		/**
-		 * 歌词的全局时间偏移量
-		 */
-		overallOffset: 0,
-
-		/**
 		 * 歌词信息
 		 */
 		lyricsInfo: null,
@@ -140,7 +137,7 @@ LyricsBox = (function () {
 			var lyricsBox = this;
 
 			var time = new Date().getTime() -
-				(lyricsBox.lyricsInfo.startTime + lyricsBox.overallOffset + transitionOffset);
+				(lyricsBox.lyricsInfo.startTime + lyricsBox.lyricsInfoCache.offset + transitionOffset);
 
 			if (!lyricsBox.lyricsInfo.lyrics.some(function (item, position) {
 
@@ -206,6 +203,16 @@ LyricsBox = (function () {
 		},
 
 		/**
+		 * 设置歌词的全局时间偏移量
+		 */
+		setOffset: function (offset) {
+
+			var lyricsBox = this;
+
+			lyricsBox.lyricsInfoCache.offset = offset || 0;
+		},
+
+		/**
 		 * 从歌词缓存中加载歌词
 		 */
 		update: function () {
@@ -220,6 +227,7 @@ LyricsBox = (function () {
 
 				lyricsBox.lyricsInfo = {
 					startTime: lyricsBox.lyricsInfoCache.startTime,
+					offset: lyricsBox.lyricsInfoCache.offset,
 					lyrics: lyricsBox.lyricsInfoCache.lyrics.map(function (item) {
 
 						return item;
@@ -286,6 +294,7 @@ LyricsBox = (function () {
 
 			lyricsBox.lyricsInfoCache = {
 				startTime: new Date().getTime(),
+				offset: 0,
 				lyrics: []
 			};
 		},

@@ -156,8 +156,8 @@
 					return item1.time - item2.time;
 				});
 
-				lyricsBox.overallOffset = 0;
-				lyricsBox.setStartTime(parseInt(fullInfo.lyricsInfo.startTime));
+				lyricsBox.setStartTime(fullInfo.lyricsInfo.startTime);
+				lyricsBox.setOffset(fullInfo.lyricsInfo.offset);
 
 				lyrics.forEach(function (item) {
 
