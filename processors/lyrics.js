@@ -1,9 +1,10 @@
 
-/*
+/**
  * 歌词查找处理模块
  */
 
 var doubanFMAccessor = require('../accessor/douban-fm');
+var lrcParser = require('./lrc-parser');
 
 module.exports = function (fmInfo, callback) {
 
@@ -17,38 +18,11 @@ module.exports = function (fmInfo, callback) {
 
 		} else {
 
+			var lyrics = lrcParser.parse('[00:00.00]孤独患者\n[00:01.28]作词：小寒  作曲：方大同\n[00:03.28]演唱：陈奕迅\n[00:10.28]\n[00:17.56]欢笑声  欢呼声\n[00:20.65]炒热气氛  心却很冷\n[00:24.39]聚光灯  是种蒙恩\n[00:28.03]我却不能  喊等一等\n[00:31.09]\n[00:31.56]我真佩服我  还能幽默\n[00:35.21]掉眼泪时用笑掩过  怕人看破  顾虑好多\n[00:42.56]不谈寂寞  我们就都快活\n[00:47.90]\n[00:48.88]我不唱声嘶力竭的情歌\n[00:55.61]不表示没有心碎的时刻\n[01:02.48]我不曾摊开伤口任宰割  愈合就无人晓得\n[01:12.93]我内心挫折\n[01:16.59]活像个孤独患者  自我拉扯\n[01:24.02]外向的孤独患者  有何不可\n[01:29.70]\n[01:39.36]笑越大声  越是残忍\n[01:42.90]挤满体温  室温更冷\n[01:46.40]万一关灯  空虚扰人\n[01:49.94]我却不能  喊等一等\n[01:52.94]\n[01:53.45]你说你爱我  却一直说\n[01:57.04]说我不该窝在角落  策划逃脱  这也有错\n[02:04.01]连我脆弱  的权利都掠夺\n[02:09.22]\n[02:10.13]我不唱声嘶力竭的情歌\n[02:17.16]不表示没有心碎的时刻\n[02:24.21]我不曾摊开伤口任宰割  愈合就无人晓得\n[02:34.83]我内心挫折\n[02:38.43]活像个孤独患者 自我拉扯\n[02:45.26]外向的孤独患者 有何不可\n[02:50.43]\n[03:21.03]我不要声嘶力竭的情歌\n[03:27.72]来提示我需要你的时刻\n[03:34.89]表面镇定并不是保护色  反而是要你懂得\n[03:45.17]我不知为何\n[03:48.86]活像个孤独患者  自我拉扯\n[03:55.89]外向的孤独患者  需要认可\n[04:03.75]\n[04:09.75]噢……噢……\n[04:20.75]\n');
+
 			var lyricsInfo = {
 				startTime: fmInfo.startTime,
-				lyrics: [
-					{ "lyric": "\u9648\u5955\u8fc5 - \u5144\u59b9", "time": 260 },
-					{ "lyric": "\u4f5c\u66f2\uff1a\u5f90\u4f1f\u8d24  \u586b\u8bcd\uff1a\u6797\u5915", "time": 3500 },
-					{ "lyric": "", "time": 124770 },
-					{ "lyric": "", "time": 80930 },
-					{ "lyric": "", "time": 6430 },
-					{ "lyric": "\u5bf9\u6211\u597d \u5bf9\u6211\u597d \u597d\u5230\u65e0\u8def\u53ef\u9000", "time": 12940 },
-					{ "lyric": "\u53ef\u662f\u6211\u4e5f\u5f88\u60f3 \u6709\u4e2a\u4eba\u966a", "time": 16830 },
-					{ "lyric": "\u624d\u4e0d\u613f\u628a\u4f60\u5f97\u7f6a \u4e8e\u662f\u90a3\u4e48\u8fc2\u56de", "time": 21440 },
-					{ "lyric": "\u4e00\u65f6\u8fdb \u4e00\u65f6\u9000 \u4fdd\u6301\u5b89\u5168\u8303\u56f4", "time": 27340 },
-					{ "lyric": "\u8fd9\u4e2a\u9634\u8c0b\u8ba9\u6211\u597d\u60ed\u6127", "time": 30510 },
-					{ "lyric": "\u4eab\u53d7\u88ab\u7231\u6ecb\u5473 \u5374\u4e0d\u8ba9\u4f60\u60f3\u5165\u975e\u975e", "time": 34820 },
-					{ "lyric": "", "time": 144710 },
-					{ "lyric": "\u5c31\u8ba9\u6211\u4eec\u865a\u4f2a", "time": 42120 },
-					{ "lyric": "\u6709\u611f\u60c5 \u522b\u6d6a\u8d39", "time": 45260 },
-					{ "lyric": "\u4e0d\u80fd\u76f8\u7231\u7684\u4e00\u5bf9", "time": 48990 },
-					{ "lyric": "\u4eb2\u7231\u50cf\u4e24\u5144\u59b9", "time": 52510 },
-					{ "lyric": "\u7231\u8ba9\u6211\u4eec\u865a\u4f2a", "time": 55520 },
-					{ "lyric": "\u6211\u5f97\u5230 \u4e8e\u4e8b\u65e0\u8865\u7684\u5b89\u6170", "time": 58840 },
-					{ "lyric": "\u4f60\u4e5f\u5f97\u5230 \u6a21\u4eff\u7231\u4e0a\u4e00\u4e2a\u4eba\u7684\u673a\u4f1a", "time": 63580 },
-					{ "lyric": "\u6b8b\u5fcd\u4e5f\u4e0d\u662f\u6148\u60b2", "time": 70500 },
-					{ "lyric": "", "time": 176810 },
-					{ "lyric": "\u8fd9\u6837\u7684\u5173\u7cfb\u4f60\u8bf4 \u591a\u5b8c\u7f8e", "time": 73800 },
-					{ "lyric": "\u773c\u770b\u4f60 \u770b\u8457\u6211 \u770b\u5f97\u90a3\u4e48\u66a7\u6627", "time": 92650 },
-					{ "lyric": "\u88ab\u7231\u7231\u4eba\u539f\u6765\u4e00\u6837\u53ef\u60b2", "time": 95650 },
-					{ "lyric": "\u4e3a\u751a\u4e48\u7adf\u7136\u9632\u5907 \u522b\u4eba\u7ed9\u6211\u732e\u5a9a", "time": 100010 },
-					{ "lyric": "\u4e0d\u80fd\u63a8 \u4e0d\u80fd\u8981 \u8981\u4e86\u6015\u4f60\u8bef\u4f1a", "time": 105970 },
-					{ "lyric": "\u8ba9\u6211\u60f3\u8d77\u66fe\u7ecf\u7231\u8fc7\u8c01", "time": 109140 },
-					{ "lyric": "\u6211\u6240\u8981\u7684\u5979\u4e0d\u7ed9 \u597d\u50cf\u5c0f\u5077\u4e00\u6837\u5351\u5fae", "time": 114230 }
-				]
+				lyrics: lyrics
 			};
 
 			if (callback) callback(null, songInfo, lyricsInfo);
