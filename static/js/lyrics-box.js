@@ -242,7 +242,7 @@ LyricsBox = (function () {
 
 							if (event.button === 0) {
 
-								lyricsBox.startHover(event.target, event.offsetY);
+								lyricsBox.startHover(event.target, event.layerY);
 							}
 						});
 
@@ -371,9 +371,15 @@ LyricsBox = (function () {
 				lyricsBox.selectEndItem = item;
 
 				lyricsBox.setSelectArea(
-					lyricsBox.selectStartItem.offsetTop + cursorOffset,
-					lyricsBox.lyricList.clientHeight - lyricsBox.selectStartItem.offsetTop - cursorOffset
+					cursorOffset,
+					lyricsBox.lyricList.clientHeight - cursorOffset
 				);
+
+				setTimeout(function () {
+
+					lyricsBox.selectArea.classList.add('scroll');
+
+				}, 1);
 
 				setTimeout(function () {
 
@@ -525,6 +531,7 @@ LyricsBox = (function () {
 
 				lyricsBox.selectState = 'none';
 
+				lyricsBox.selectArea.classList.remove('scroll');
 				lyricsBox.selectArea.classList.add('hidden');
 
 				lyricsBox.update();

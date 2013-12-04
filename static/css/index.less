@@ -128,11 +128,15 @@ body
 									width: 100%;
 									background: #C2ECD1;
 									opacity: 1;
-									.transition (top 0.25s, bottom 0.25s, opacity 0.4s;);
+									.transition (opacity 0.4s);
+
+									&.scroll
+									{
+										.transition (top 0.25s, bottom 0.25s, opacity 0.4s;);
+									}
 
 									&.hidden
 									{
-										.transition (opacity 0.4s);
 										opacity: 0;
 									}
 								}

@@ -34,6 +34,23 @@
 		autoSize();
 
 
+		// 歌词分享框控制
+
+		var foldShareBox = function (event) {
+
+			wrap.removeEventListener('click', foldShareBox);
+
+			lyricsBox.cancelSelect();
+
+			shareBox.classList.add('hidden');
+		};
+
+		shareBox.addEventListener('click', function (event) {
+
+			event.stopPropagation();
+		});
+
+
 		// 歌词框控制
 
 		var lyricsBox = new LyricsBox(lyricsWrap, lyricsSlide,lyricList, notice, selectArea, function (event) {
@@ -43,6 +60,8 @@
 			setTimeout(function () {
 
 				shareBox.classList.remove('hidden');
+
+				wrap.addEventListener('click', foldShareBox);
 
 			}, 500);
 		});
@@ -59,26 +78,6 @@
 
 		lyricsWrap.addEventListener('DOMMouseScroll', mousewheel);
 		lyricsWrap.addEventListener('mousewheel', mousewheel);
-
-
-		// 歌词分享框控制
-
-		var foldShareBox = function (event) {
-
-			lyricsBox.cancelSelect();
-
-			shareBox.classList.add('hidden');
-		};
-
-		wrap.addEventListener('click', function (event) {
-
-			foldShareBox();
-		});
-
-		shareBox.addEventListener('click', function (event) {
-
-			event.stopPropagation();
-		});
 
 
 		// Ajax请求处理
