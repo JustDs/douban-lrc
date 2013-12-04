@@ -111,14 +111,14 @@ LyricsBox = (function () {
 		selectState: 'none',
 
 		/**
-		 * 选择开始元素
+		 * 选择开始元素序号
 		 */
-		selectStartItem: null,
+		selectStartIndex: null,
 
 		/**
-		 * 选择结束元素
+		 * 选择结束元素序号
 		 */
-		selectEndItem: null,
+		selectEndIndex: null,
 
 		/**
 		 * 当歌词被选中时触发该句柄
@@ -348,18 +348,21 @@ LyricsBox = (function () {
 		/**
 		 * 设置选择区域范围
 		 */
-		setSelectArea: function (offsetTop, offsetBottom) {
+		setSelectArea: function (startIndex, endIndex) {
 
 			var lyricsBox = this;
 
-			lyricsBox.selectArea.style.top = offsetTop + lyricsBox.lyricList.offsetTop + 'px';
-			lyricsBox.selectArea.style.bottom = offsetBottom + 'px';
+			var topElement = lyricsBox.lyricList.children[Math.min(startIndex, endIndex)];
+			var bottomElement =lyricsBox.lyricList.children[ Math.max(startIndex, endIndex)];
+
+			lyricsBox.selectArea.style.top = (lyricsBox.lyricList.offsetTop + topElement.offsetTop) + 'px';
+			lyricsBox.selectArea.style.bottom = bottomElement.offsetBottom + 'px';
 		},
 
 		/**
 		 * 准备开始选择
 		 */
-		startHover: function (item, cursorOffset) {
+		startHover: function (element, cursorOffset) {
 
 			var lyricsBox = this;
 
@@ -367,13 +370,19 @@ LyricsBox = (function () {
 
 				lyricsBox.selectState = 'hover';
 
-				lyricsBox.selectStartItem = item;
-				lyricsBox.selectEndItem = item;
+				for (var index = 0; index < lyricsBox.lyricList.children.length; index++) {
 
-				lyricsBox.setSelectArea(
-					cursorOffset,
-					lyricsBox.lyricList.clientHeight - cursorOffset
-				);
+					if (lyricsBox.lyricList.children[index] === element) {
+
+						lyricsBox.selectStartIndex = index;
+						lyricsBox.selectEndIndex = index;;
+
+						break;
+					}
+				}
+
+				lyricsBox.selectArea.style.top = (lyricsBox.lyricList.offsetTop + cursorOffset) + 'px';
+				lyricsBox.selectArea.style.bottom = lyricsBox.lyricList.clientHeight - cursorOffset + 'px';
 
 				setTimeout(function () {
 
@@ -419,8 +428,8 @@ LyricsBox = (function () {
 				lyricsBox.lyricsWrap.classList.add('selecting');
 
 				lyricsBox.setSelectArea(
-					lyricsBox.selectStartItem.offsetTop,
-					lyricsBox.selectStartItem.offsetBottom
+					lyricsBox.selectStartIndex,
+					lyricsBox.selectStartIndex
 				);
 			}
 		},
@@ -435,55 +444,44 @@ LyricsBox = (function () {
 			if (lyricsBox.selectState === 'selecting') {
 
 				if (cursorOffsetToWindow < 80
-				 && lyricsBox.selectEndItem !== lyricsBox.lyricList.firstElementChild) {
+				 && lyricsBox.selectEndIndex > 0) {
 
 					lyricsBox.lyricsSlide.style.top =
 						(parseInt(lyricsBox.lyricsSlide.style.top) + 4) + 'px';
 				}
 
 				if (window.innerHeight - cursorOffsetToWindow < 80
-				 && lyricsBox.selectEndItem !== lyricsBox.lyricList.lastElementChild) {
+				 && lyricsBox.selectEndIndex < lyricsBox.lyricList.children.length - 1) {
 
 					lyricsBox.lyricsSlide.style.top =
 						(parseInt(lyricsBox.lyricsSlide.style.top) - 4) + 'px';
 				}
 
-				if (cursorOffset < lyricsBox.selectStartItem.offsetMidline) {
+				if (cursorOffset < lyricsBox.lyricList.children[lyricsBox.selectStartIndex].offsetMidline) {
 
-					for (var index = 0; index < lyricsBox.lyricList.children.length; index++) {
+					for (var index = 0;
+						index <= lyricsBox.selectStartIndex; index++) {
 
-						lyricsBox.selectEndItem = lyricsBox.lyricList.children[index];
+						lyricsBox.selectEndIndex = index;
 
-						if (lyricsBox.selectEndItem === lyricsBox.selectStartItem
-							|| lyricsBox.selectEndItem.offsetMidline > cursorOffset) {
-
-							lyricsBox.setSelectArea(
-								lyricsBox.selectEndItem.offsetTop,
-								lyricsBox.selectStartItem.offsetBottom
-							);
-
-							break;
-						}
+						if (lyricsBox.lyricList.children[index].offsetMidline > cursorOffset) break;
 					}
 
 				} else {
 
-					for (var index = lyricsBox.lyricList.children.length - 1; index >= 0; index--) {
+					for (var index = lyricsBox.lyricList.children.length - 1;
+						index >= lyricsBox.selectStartIndex; index--) {
 
-						lyricsBox.selectEndItem = lyricsBox.lyricList.children[index];
+						lyricsBox.selectEndIndex = index;
 
-						if (lyricsBox.selectEndItem === lyricsBox.selectStartItem
-							|| lyricsBox.selectEndItem.offsetMidline < cursorOffset) {
-
-							lyricsBox.setSelectArea(
-								lyricsBox.selectStartItem.offsetTop,
-								lyricsBox.selectEndItem.offsetBottom
-							);
-
-							break;
-						}
+						if (lyricsBox.lyricList.children[index].offsetMidline < cursorOffset) break;
 					}
 				}
+
+				lyricsBox.setSelectArea(
+					lyricsBox.selectEndIndex,
+					lyricsBox.selectStartIndex
+				);
 			}
 		},
 
@@ -505,12 +503,12 @@ LyricsBox = (function () {
 
 				var selectContent = [];
 
-				for (var element = lyricsBox.selectStartItem;
-					element; element = element.nextElementSibling) {
+				var topIndex = Math.min(lyricsBox.selectStartIndex, lyricsBox.selectEndIndex);
+				var bottomIndex = Math.max(lyricsBox.selectStartIndex, lyricsBox.selectEndIndex);
 
-					selectContent.push(element.innerHTML);
+				for (var index = topIndex; index <= bottomIndex; index++) {
 
-					if (element === lyricsBox.selectEndItem) break;
+					selectContent.push(lyricsBox.lyricList.children[index].innerHTML);
 				}
 
 				if (lyricsBox.onselect) lyricsBox.onselect({
