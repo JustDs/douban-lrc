@@ -26,7 +26,8 @@ module.exports = {
 				code: 4101,
 				fatal: true,
 				message: '分享链接格式错误.',
-				details: {}
+				details: {},
+				prevErr: null
 			});
 
 			return;
@@ -64,7 +65,8 @@ module.exports = {
 						details : {
 							'请求Url': requestUrl,
 							'Http状态码': err ? undefined : res.statusCode,
-						}
+						},
+						prevErr: null
 					});
 
 				} else {
@@ -87,10 +89,11 @@ module.exports = {
 							details : {
 								'请求Url': requestUrl,
 								'错误信息': body.err,
-							}
+							},
+							prevErr: null
 						});
 
-					} else {console.log(requestUrl);
+					} else {
 
 						if (body.song && body.song[0]) {
 
@@ -118,13 +121,14 @@ module.exports = {
 						} else {
 
 							if (callback) callback({
-								code: 4103,
+								code: 4104,
 								fatal: true,
 								message: '从豆瓣FM服务器请求歌曲完整信息得到的数据格式错误.',
 								details : {
 									'请求Url': requestUrl,
 									'数据内容': body,
-								}
+								},
+								prevErr: null
 							});
 						}
 					}

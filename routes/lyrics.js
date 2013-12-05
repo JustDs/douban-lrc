@@ -5,9 +5,9 @@
 
 var lyricsProcessor = require('../processors/lyrics');
 
-module.exports = function (req, res) {
+module.exports = function (req, res, callback) {
 
-	(function (response) {
+	(function (callback) {
 
 		var fmInfo = {
 			songId: null,
@@ -28,11 +28,12 @@ module.exports = function (req, res) {
 
 			} else {
 
-				if (response) response({
-					code: 1000,
+				if (callback) callback({
+					code: 2101,
 					fatal: true,
 					message: '请求格式不正确.',
-					details : {}
+					details : {},
+					prevErr: null
 				});
 
 				return;
@@ -41,28 +42,19 @@ module.exports = function (req, res) {
 
 		lyricsProcessor(fmInfo, function (err, songInfo, lyricsInfo) {
 
-			if (err) {
+			if (err && err.fatal) {
 
-				if (response) response(err);
+				if (callback) callback(err);
 
 			} else {
 
-				if (response) response(null, songInfo, lyricsInfo);
+				if (callback) callback(err, songInfo, lyricsInfo);
 			}
 		});
 
 	})(function (err, songInfo, lyricsInfo) {
-
-		if (err) {
-
-			var message = '错误 ' + err.code + ': ' + err.message;
-
-			for (var item in err.details) {
-
-				message += '\n' + item + ': ' + err.details[item];
-			}
-
-			(err.fatal ? console.error : console.warn)(message);
+		
+		if (err && err.fatal) {
 
 			res.json({ code: err.code });
 
@@ -74,5 +66,7 @@ module.exports = function (req, res) {
 				lyricsInfo: lyricsInfo
 			});
 		}
+
+		if (callback) callback(err);
 	});
 };

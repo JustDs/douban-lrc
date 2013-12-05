@@ -4,29 +4,44 @@
  */
 
 var doubanFMAccessor = require('../accessor/douban-fm');
+var baiduAccessor = require('../accessor/baidu');
 var lrcParser = require('./lrc-parser');
 
 module.exports = function (fmInfo, callback) {
 
-	console.log(fmInfo);
-
 	doubanFMAccessor.getSongInfo(fmInfo, function (err, songInfo) {
 
-		if (err) {
+		if (err && err.fatal) {
 
 			if (callback) callback(err);
 
 		} else {
 
-			var lyrics = lrcParser.parse('[00:00.00]孤独患者\n[00:01.28]作词：小寒  作曲：方大同\n[00:03.28]演唱：陈奕迅\n[00:10.28]\n[00:17.56]欢笑声  欢呼声\n[00:20.65]炒热气氛  心却很冷\n[00:24.39]聚光灯  是种蒙恩\n[00:28.03]我却不能  喊等一等\n[00:31.09]\n[00:31.56]我真佩服我  还能幽默\n[00:35.21]掉眼泪时用笑掩过  怕人看破  顾虑好多\n[00:42.56]不谈寂寞  我们就都快活\n[00:47.90]\n[00:48.88]我不唱声嘶力竭的情歌\n[00:55.61]不表示没有心碎的时刻\n[01:02.48]我不曾摊开伤口任宰割  愈合就无人晓得\n[01:12.93]我内心挫折\n[01:16.59]活像个孤独患者  自我拉扯\n[01:24.02]外向的孤独患者  有何不可\n[01:29.70]\n[01:39.36]笑越大声  越是残忍\n[01:42.90]挤满体温  室温更冷\n[01:46.40]万一关灯  空虚扰人\n[01:49.94]我却不能  喊等一等\n[01:52.94]\n[01:53.45]你说你爱我  却一直说\n[01:57.04]说我不该窝在角落  策划逃脱  这也有错\n[02:04.01]连我脆弱  的权利都掠夺\n[02:09.22]\n[02:10.13]我不唱声嘶力竭的情歌\n[02:17.16]不表示没有心碎的时刻\n[02:24.21]我不曾摊开伤口任宰割  愈合就无人晓得\n[02:34.83]我内心挫折\n[02:38.43]活像个孤独患者 自我拉扯\n[02:45.26]外向的孤独患者 有何不可\n[02:50.43]\n[03:21.03]我不要声嘶力竭的情歌\n[03:27.72]来提示我需要你的时刻\n[03:34.89]表面镇定并不是保护色  反而是要你懂得\n[03:45.17]我不知为何\n[03:48.86]活像个孤独患者  自我拉扯\n[03:55.89]外向的孤独患者  需要认可\n[04:03.75]\n[04:09.75]噢……噢……\n[04:20.75]\n');
+			baiduAccessor.getLrcBySongInfo(songInfo, function (err, lrc) {
 
-			var lyricsInfo = {
-				startTime: parseInt(fmInfo.startTime),
-				offset: 0,
-				lyrics: lyrics
-			};
+				if (err && err.fatal) {
 
-			if (callback) callback(null, songInfo, lyricsInfo);
+					if (callback) callback({
+						code: 3101,
+						fatal: false,
+						message: '未从百度音乐服务器查找到歌词.',
+						details: {},
+						prevErr: err
+					}, songInfo, []);
+
+				} else {
+
+					var lyrics = lrcParser.parse(lrc);
+
+					var lyricsInfo = {
+						startTime: parseInt(fmInfo.startTime),
+						offset: 0,
+						lyrics: lyrics
+					};
+
+					if (callback) callback(err, songInfo, lyricsInfo);
+				}
+			});
 		}
 	});
 };
