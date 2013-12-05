@@ -17,12 +17,12 @@ LyricsBox = (function () {
 		lyricsBox.onselect = onselect;
 
 		lyricsBox.lyricsInfo = {
-			startTime: new Date().getTime(),
+			startTime: Date.now(),
 			offset: 0,
 			lyrics: []
 		};
 		lyricsBox.lyricsInfoCache = {
-			startTime: new Date().getTime(),
+			startTime: Date.now(),
 			offset: 0,
 			lyrics: []
 		};
@@ -136,7 +136,7 @@ LyricsBox = (function () {
 
 			var lyricsBox = this;
 
-			var time = new Date().getTime() -
+			var time = Date.now() -
 				(lyricsBox.lyricsInfo.startTime + lyricsBox.lyricsInfoCache.offset + transitionOffset);
 
 			if (!lyricsBox.lyricsInfo.lyrics.some(function (item, position) {
@@ -209,7 +209,7 @@ LyricsBox = (function () {
 
 			var lyricsBox = this;
 
-			lyricsBox.lyricsInfoCache.startTime = startTime || new Date().getTime();
+			lyricsBox.lyricsInfoCache.startTime = startTime || Date.now();
 		},
 
 		/**
@@ -313,7 +313,7 @@ LyricsBox = (function () {
 			var lyricsBox = this;
 
 			lyricsBox.lyricsInfoCache = {
-				startTime: new Date().getTime(),
+				startTime: Date.now(),
 				offset: 0,
 				lyrics: []
 			};
