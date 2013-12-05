@@ -24,20 +24,20 @@ module.exports = {
 				var hour = parseInt(segments.pop() || 0);
 
 				var time = Math.floor(((hour * 60 + minute) * 60 + second) * 1000);
-
-				if (!isNaN(time)) {
-
-					line = line.replace(lable, '');
-				}
+				
+				line = line.replace(lable, '');
 
 				return time;
 
 			}).forEach(function (time) {
 
-				lyrics.push({
-					time: time,
-					lyric: line.trim()
-				});
+				if (!isNaN(time)) {
+
+					lyrics.push({
+						time: time,
+						lyric: line.trim()
+					});
+				}
 			});
 		});
 
