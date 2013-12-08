@@ -16,7 +16,7 @@
     "ejs": "*",
     "less-middleware": "*",
     "express-uglify": "*",
-    "request": "*"
+    "request": "2.27.0"
   },
   "license": "MIT"
 }
