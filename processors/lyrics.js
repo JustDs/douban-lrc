@@ -3,8 +3,8 @@
  * 歌词查找处理模块
  */
 
-var doubanFMAccessor = require('../accessor/douban-fm');
-var baiduAccessor = require('../accessor/baidu');
+var doubanFMAccessor = require('../accessors/douban-fm');
+var baiduAccessor = require('../accessors/baidu');
 var lrcParser = require('./lrc-parser');
 
 module.exports = function (fmInfo, callback) {

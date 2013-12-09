@@ -36,9 +36,9 @@ var routes = {
 	app.use(express.cookieParser('C62C985229C29E4D'));
 	app.use(express.session());
 	app.use(app.router);
+	app.use('/static', express.static(path.join(__dirname, 'static')));
 	app.use(require('less-middleware')({ src: path.join(__dirname, 'static') }));
 	app.use(require('express-uglify').middleware({ src: path.join(__dirname, 'static') }));
-	app.use(express.static(path.join(__dirname, 'static')));
 	app.enable('trust proxy');
 
 
