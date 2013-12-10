@@ -4,9 +4,12 @@
  */
 
 var querystring = require('querystring');
-var request = require('request');
 
-var cookieJar = request.jar();
+var config = require('../config');
+
+var request = require('request').defaults({
+	proxy: config.request.proxy
+});
 
 module.exports = {
 
@@ -40,7 +43,7 @@ module.exports = {
 					'Accept-Encoding': 'identity',
 					'Connection': 'keep-alive'
 				},
-				jar: cookieJar
+				jar: true
 			},
 			function (err, res, body) {
 
@@ -137,7 +140,7 @@ module.exports = {
 					'Accept-Encoding': 'identity',
 					'Connection': 'keep-alive'
 				},
-				jar: cookieJar
+				jar: true
 			},
 			function (err, res, body) {
 
@@ -216,7 +219,7 @@ module.exports = {
 					'Accept-Encoding': 'identity',
 					'Connection': 'keep-alive'
 				},
-				jar: cookieJar
+				jar: true
 			},
 			function (err, res, body) {
 

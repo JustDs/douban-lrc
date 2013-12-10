@@ -4,7 +4,12 @@
  */
 
 var url = require('url');
-var request = require('request');
+
+var config = require('../config');
+
+var request = require('request').defaults({
+	proxy: config.request.proxy
+});
 
 var cookieJar = request.jar();
 
@@ -36,6 +41,7 @@ module.exports = {
 		var requestUrl = 'http://douban.fm/j/mine/playlist?type=n&sid=&pt=0.0&from=mainsite&channel=' +
 			startToken.replace(/^.*g/, '');
 
+		cookieJar.add(request.cookie('bid="xjJFyRRyPp4"'));
 		cookieJar.add(request.cookie('start="' + startToken + '"'));
 
 		request.get(
@@ -49,7 +55,6 @@ module.exports = {
 					'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 					'Accept-Language': 'zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3',
 					'Accept-Encoding': 'identity',
-					'Cookie': 'bid="xjJFyRRyPp4"',
 					'Connection': 'keep-alive'
 				},
 				jar: cookieJar

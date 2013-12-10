@@ -8,6 +8,8 @@ var http = require('http');
 var path = require('path');
 var util = require('util');
 
+var config = require('./config');
+
 var routes = {
 
 	mainPage: require('./routes/main-page'),
@@ -24,7 +26,7 @@ var routes = {
 
 	// 环境配置
 
-	app.set('port', process.env.PORT || 3000);
+	app.set('port', config.server.port || 3000);
 	app.set('views', path.join(__dirname, 'views'));
 	app.set('view engine', 'ejs');
 	app.use(express.favicon());
@@ -33,7 +35,7 @@ var routes = {
 	app.use(express.bodyParser());
 	app.use(express.urlencoded());
 	app.use(express.methodOverride());
-	app.use(express.cookieParser('C62C985229C29E4D'));
+	app.use(express.cookieParser(config.server.cookieSecret || ''));
 	app.use(express.session());
 	app.use(app.router);
 	app.use('/static', express.static(path.join(__dirname, 'static')));
@@ -44,7 +46,7 @@ var routes = {
 
 	// 调试模式
 
-	if ('development' == app.get('env')) {
+	if ('development' === app.get('env')) {
 
 		app.use(express.errorHandler());
 	}
