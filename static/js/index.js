@@ -17,7 +17,8 @@
 		var lyricsWrap = document.getElementById('lyrics');
 		var lyricsSlide = document.getElementById('lyrics-slide');
 		var lyricList = document.getElementById('lyric-list');
-		var notice = document.getElementById('notice');
+		var lyricsNotFound = document.getElementById('lyrics-not-found');
+		var initializing = document.getElementById('initializing');
 		var selectArea = document.getElementById('select-area');
 
 		var shareBox = document.getElementById('share');
@@ -53,17 +54,27 @@
 
 		// 歌词框控制
 
-		var lyricsBox = new LyricsBox(lyricsWrap, lyricsSlide,lyricList, notice, selectArea, function (event) {
+		var lyricsBox = new LyricsBox({
+			lyricsWrap: lyricsWrap,
+			lyricsSlide: lyricsSlide,
+			lyricList: lyricList,
+			notice: {
+				initializing: initializing,
+				lyricsNotFound: lyricsNotFound
+			},
+			selectArea: selectArea,
+			onselect: function (event) {
 
-			console.log(event.content);
+				console.log(event.content);
 
-			setTimeout(function () {
+				setTimeout(function () {
 
-				shareBox.classList.remove('hidden');
+					shareBox.classList.remove('hidden');
 
-				wrap.addEventListener('click', foldShareBox);
+					wrap.addEventListener('click', foldShareBox);
 
-			}, 500);
+				}, 500);
+			}
 		});
 
 		var mousewheel = function (event) {

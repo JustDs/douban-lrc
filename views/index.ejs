@@ -44,8 +44,16 @@
 					<div class="lyrics-wrap">
 						<div class="lyrics-slide" id="lyrics-slide">
 							<div class="lyrics-slide-wrap">
-								<p class="notice hidden" id="notice">未找到对应的歌词</p>
-								<ul id="lyric-list">
+								<ul class="notice">
+									<li id="initializing">
+										<h3>正在获取电台信息</h3>
+										<p>若未打开电台请先<a href="http://douban.fm/" title="打开豆瓣FM" target="_blank">打开电台</a></p>
+									</li>
+									<li class="hidden" id="lyrics-not-found">
+										<h3>未找到对应的歌词</h3>
+									</li>
+								</ul>
+								<ul class="lyric-list" id="lyric-list">
 								</ul>
 								<div class="select-area hidden" id="select-area"></div>
 							</div>

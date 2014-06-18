@@ -51,7 +51,7 @@ body
 					top: -200px;
 					height: 9999px;
 					width: 350px;
-					.box-shadow (0 0 6px rgba(0, 0, 0, 1.0););
+					.box-shadow (0 0 6px rgba(0, 0, 0, 1.0));
 					background: #FFF;
 					overflow: hidden;
 					cursor: default;
@@ -77,22 +77,47 @@ body
 							{
 								position: relative;
 
-								.notice
+								ul.notice
 								{
-									color: #BBB;
-									font-size: 23px;
-									letter-spacing: 2px;
-									text-align: center;
-									opacity: 1;
-									.transition (opacity 0.4s;);
+									position: relative;
+									height: 100px;
 
-									&.hidden
+									li
 									{
-										opacity: 0;
+										position: absolute;
+										top: 0;
+										width: 100%;
+										text-align: center;
+										opacity: 1;
+										.transition (opacity 0.4s);
+
+										&.hidden
+										{
+											opacity: 0;
+										}
+
+										h3
+										{
+											color: #BBB;
+											font-size: 23px;
+											line-height: 70px;
+											letter-spacing: 2px;
+										}
+
+										p
+										{
+											color: #BBB;
+											font-size: 15px;
+										}
+
+										a
+										{
+											color: #9FDDAC;
+										}
 									}
 								}
 
-								ul
+								ul.lyric-list
 								{
 									position: relative;
 									z-index: 500;
@@ -123,7 +148,6 @@ body
 									position: absolute;
 									z-index: 300;
 									left: 0;
-									top: 0px;
 									bottom: 0px;
 									width: 100%;
 									background: #C2ECD1;
@@ -168,7 +192,7 @@ body
 								float: left;
 								margin-right: 30px;
 								.border-radius (9999px);
-								.box-shadow (1px 1px 4px rgba(0, 0, 0, 0.8););
+								.box-shadow (1px 1px 4px rgba(0, 0, 0, 0.8));
 								background-color: #FFF;
 								background-size: 100% 100%;
 								overflow: hidden;
@@ -295,7 +319,7 @@ body
 							width: 400px;
 							padding: 10px 30px;
 							.border-radius (999px);
-							.box-shadow (0 0 6px rgba(0, 0, 0, 0.2););
+							.box-shadow (0 0 6px rgba(0, 0, 0, 0.2));
 							background: #FFF;
 							.transition (left 0.8s);
 
