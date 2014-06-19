@@ -338,15 +338,17 @@ LyricsBox = (function () {
 
 				var element = lyricsBox.lyricList.children[index];
 
-				element.classList.remove('highlight');
+				if (index === Math.floor(position)) {
+
+					element.classList.add('highlight');
+
+				} else {
+
+					element.classList.remove('highlight');
+				}
 			}
 
 			var element = lyricsBox.lyricList.children[Math.floor(position)];
-
-			if (element) {
-
-				element.classList.add('highlight');
-			}
 
 			position = Math.min(position, lyricsBox.lyricList.children.length - 1);
 			position = Math.max(position, 0);
