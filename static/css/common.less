@@ -403,6 +403,15 @@
 	transition+: @transition;
 }
 
+.user-select (@select-type)
+{
+	-webkit-user-select: @select-type;
+	-khtml-user-select: @select-type;
+	-moz-user-select: @select-type;
+	-ms-user-select: @select-type;
+	user-select: @select-type;
+}
+
 .selection (@background: grey, @color: inherit)
 {
 	&::-moz-selection
