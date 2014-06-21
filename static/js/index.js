@@ -99,6 +99,7 @@
 
 				url: '/',
 				data: fmInfo,
+				requestType: 'json',
 				responseType: 'json',
 
 				onsuccess: function (event) {
