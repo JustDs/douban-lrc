@@ -60,8 +60,8 @@ var config = require('./config');
 		});
 	});
 
-	app.use('/static', require('less-middleware')(app.get('static')));
-	app.use('/static', express.static(app.get('static')));
+	app.use(require('less-middleware')(app.get('static')));
+	app.use(express.static(app.get('static')));
 	app.use(require('express-uglify').middleware({ src: app.get('static') }));
 
 
