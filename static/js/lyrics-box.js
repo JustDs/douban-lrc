@@ -5,16 +5,18 @@
 
 LyricsBox = (function () {
 
-	function LyricsBox(lyricsWrap, lyricsSlide, lyricList, notice, selectArea, onselect) {
+	function LyricsBox(options) {
 
 		var lyricsBox = this;
 
-		lyricsBox.lyricsWrap = lyricsWrap;
-		lyricsBox.lyricsSlide = lyricsSlide;
-		lyricsBox.lyricList = lyricList;
-		lyricsBox.notice = notice;
-		lyricsBox.selectArea = selectArea;
-		lyricsBox.onselect = onselect;
+		options = options || {};
+
+		lyricsBox.lyricsWrap = options.lyricsWrap;
+		lyricsBox.lyricsSlide = options.lyricsSlide;
+		lyricsBox.lyricList = options.lyricList;
+		lyricsBox.notice = options.notice;
+		lyricsBox.selectArea = options.selectArea;
+		lyricsBox.onselect = options.onselect;
 
 		lyricsBox.lyricsInfo = {
 			startTime: Date.now(),
@@ -27,7 +29,7 @@ LyricsBox = (function () {
 			lyrics: []
 		};
 
-		lyricList.addEventListener('mousemove', function (event) {
+		lyricsBox.lyricList.addEventListener('mousemove', function (event) {
 
 			lyricsBox.startSelect();
 
@@ -294,13 +296,15 @@ LyricsBox = (function () {
 
 					lyricsBox.scrollTo();
 
-					lyricsBox.notice.classList.add('hidden');
+					lyricsBox.notice.initializing.classList.add('hidden');
+					lyricsBox.notice.lyricsNotFound.classList.add('hidden');
 
 				} else {
 
 					lyricsBox.scrollTo(0);
 
-					lyricsBox.notice.classList.remove('hidden');
+					lyricsBox.notice.initializing.classList.add('hidden');
+					lyricsBox.notice.lyricsNotFound.classList.remove('hidden');
 				}
 			}
 		},
@@ -334,15 +338,17 @@ LyricsBox = (function () {
 
 				var element = lyricsBox.lyricList.children[index];
 
-				element.classList.remove('highlight');
+				if (index === Math.floor(position)) {
+
+					element.classList.add('highlight');
+
+				} else {
+
+					element.classList.remove('highlight');
+				}
 			}
 
 			var element = lyricsBox.lyricList.children[Math.floor(position)];
-
-			if (element) {
-
-				element.classList.add('highlight');
-			}
 
 			position = Math.min(position, lyricsBox.lyricList.children.length - 1);
 			position = Math.max(position, 0);
@@ -382,7 +388,7 @@ LyricsBox = (function () {
 			var lyricsBox = this;
 
 			var topElement = lyricsBox.lyricList.children[Math.min(startIndex, endIndex)];
-			var bottomElement =lyricsBox.lyricList.children[ Math.max(startIndex, endIndex)];
+			var bottomElement = lyricsBox.lyricList.children[Math.max(startIndex, endIndex)];
 
 			lyricsBox.selectArea.style.top = (lyricsBox.lyricList.offsetTop + topElement.offsetTop) + 'px';
 			lyricsBox.selectArea.style.bottom = bottomElement.offsetBottom + 'px';

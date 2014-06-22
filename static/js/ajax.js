@@ -14,6 +14,7 @@ Ajax = (function () {
 		 *   url: 请求的URL, 不可为空
 		 *   method: 请求类型, 一般为'GET'或'POST', 默认为'GET'
 		 *   data: 数据体, 将以键值对形式发送, 默认为空
+		 *   requestType: 请求类型, 可以为'urlencoded','json','multipart'等, 默认为'urlencoded'
 		 *   responseType: 返回类型, 可以为'text','json','blob'等, 默认为空字符串
 		 *   onprogress: 请求收到数据时触发该句柄, 默认为空
 		 *   onsuccess: 请求成功时触发该句柄, 默认为空
@@ -102,17 +103,39 @@ Ajax = (function () {
 			xhr.addEventListener('abort', errorEventListener);
 			xhr.addEventListener('timeout', errorEventListener);
 
-			var formData = new FormData();
+			var requestBody = '';
+			var requestType = options.requestType || 'urlencoded';
 
 			if (options.method === 'POST' && options.data) {
 
-				for (var key in options.data) {
+				if (requestType === 'urlencoded') {
 
-					formData.append(key, options.data[key].toString());
+					for (var key in options.data) {
+
+						requestBody += encodeURIComponent(key) + "=" +
+							encodeURIComponent(options.data[key]) + "&";
+					}
+					
+					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+				} else if (requestType === 'json') {
+
+					requestBody = JSON.stringify(options.data);
+					
+					xhr.setRequestHeader('Content-Type', 'application/json');
+
+				} else if (requestType === 'multipart') {
+
+					requestBody = new FormData();
+
+					for (var key in options.data) {
+
+						requestBody.append(key, options.data[key].toString());
+					}
 				}
 			}
 
-			xhr.send(options.data ? formData : null);
+			xhr.send(requestBody);
 		},
 
 		/**
