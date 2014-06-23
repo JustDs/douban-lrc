@@ -46,6 +46,18 @@ LyricsBox = (function () {
 			}
 		});
 
+		function mousewheel(event) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+
+			lyricsBox.setOffset(lyricsBox.getOffset() + delta * 400);
+		};
+		lyricsBox.lyricsWrap.addEventListener('DOMMouseScroll', mousewheel);
+		lyricsBox.lyricsWrap.addEventListener('mousewheel', mousewheel);
+
 		setInterval(function () {
 
 			lyricsBox.refresh();
@@ -118,6 +130,11 @@ LyricsBox = (function () {
 		 * 选择结束元素序号
 		 */
 		selectEndIndex: null,
+
+		/**
+		 * 已选择的歌词内容
+		 */
+		selectedContent: '',
 
 		/**
 		 * 当歌词被选中时触发该句柄
@@ -546,9 +563,11 @@ LyricsBox = (function () {
 					selectContent.push(lyricsBox.lyricList.children[index].innerHTML);
 				}
 
+				lyricsBox.selectedContent = selectContent.join(' ');
+
 				if (lyricsBox.onselect) lyricsBox.onselect({
 					target: lyricsBox,
-					content: selectContent.join(' ')
+					content: lyricsBox.selectedContent
 				});
 			}
 		},
