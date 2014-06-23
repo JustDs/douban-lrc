@@ -24,6 +24,12 @@
 		var selectArea = document.getElementById('select-area');
 
 		var shareBox = document.getElementById('share');
+		var shareButtons = {
+			weibo: document.getElementById('share-weibo'),
+			renren: document.getElementById('share-renren'),
+			douban: document.getElementById('share-douban'),
+			clipboard: document.getElementById('share-clipboard')
+		};
 
 		// 当前播放的歌曲信息
 
@@ -55,6 +61,21 @@
 		shareBox.addEventListener('click', function (event) {
 
 			event.stopPropagation();
+		});
+
+
+		// 歌词分享按钮控制
+
+		shareButtons.weibo.addEventListener('click', function (event) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			Share.weibo({
+				url: 'http://douban.fm/?start=' + songInfo.startToken,
+				content: lyricsBox.selectedContent,
+				imageUrl: songInfo.albumImgUrl
+			});
 		});
 
 
