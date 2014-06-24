@@ -5,7 +5,7 @@
 
 Share = (function () {
 
-	function popupShareWindow(shareLink) {
+	function popupShareWindow(shareLink, callback) {
 
 		if (shareLink && shareLink.baseUrl) {
 
@@ -22,8 +22,10 @@ Share = (function () {
 				}
 			}
 
-			window.open(shareUrl, 'DoubanLRC-Share',
+			var popupWindow = window.open(shareUrl, 'DoubanLRC-Share',
 				'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=350');
+
+			if (callback) callback(popupWindow);
 		}
 	};
 
@@ -33,7 +35,7 @@ Share = (function () {
 
 			var weiboAppKey = '2403884134';
 
-			var content = (options.content || '') + ' —— ' +
+			var content = (options.content || []).join(' ') + ' —— ' +
 				 (options.artist || '') + '《' + (options.title || '') +'》';
 
 			popupShareWindow({
@@ -58,7 +60,7 @@ Share = (function () {
 					'resourceUrl': options.url || '',
 					'srcUrl': options.url || '',
 					'title': title,
-					'description': options.content || '',
+					'description': (options.content || []).join(' '),
 					'pic': options.imageUrl || '',
 					'charset': 'UTF-8'
 				}
@@ -74,7 +76,7 @@ Share = (function () {
 				params: {
 					'href': options.url || '',
 					'name': title,
-					'text': options.content || '',
+					'text': (options.content || []).join(' '),
 					'image': options.imageUrl || '',
 					'bm': '1'
 				}
@@ -83,7 +85,11 @@ Share = (function () {
 		
 		'clipboard': function (options) {
 
-			;
+			setTimeout(function () {
+
+				if (options.callback) options.callback();
+
+			}, 800);
 		}
 	};
 

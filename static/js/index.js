@@ -80,12 +80,23 @@
 						title: songInfo.title,
 						artist: songInfo.artist,
 						content: lyricsBox.selectedContent,
-						imageUrl: songInfo.albumImgUrl
+						imageUrl: songInfo.albumImgUrl,
+						callback: foldShareBox
 					});
 				});
 
 			})(target);
 		}
+
+
+		// 复制歌词到剪贴板
+
+		ZeroClipboard.config({ swfPath: 'js/zero-clipboard/zero-clipboard.swf' });
+
+		new ZeroClipboard(shareButtons['clipboard']).on('copy', function (event) {
+
+			event.clipboardData.setData('text/plain', lyricsBox.selectedContent.join('\n'));
+		});
 
 
 		// 歌词框控制
@@ -100,8 +111,6 @@
 			},
 			selectArea: selectArea,
 			onselect: function (event) {
-
-				console.log(lyricsBox.selectedContent);
 
 				setTimeout(function () {
 

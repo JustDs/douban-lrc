@@ -553,17 +553,15 @@ LyricsBox = (function () {
 
 				lyricsBox.lyricsWrap.classList.remove('selecting');
 
-				var selectContent = [];
+				lyricsBox.selectedContent = [];
 
 				var topIndex = Math.min(lyricsBox.selectStartIndex, lyricsBox.selectEndIndex);
 				var bottomIndex = Math.max(lyricsBox.selectStartIndex, lyricsBox.selectEndIndex);
 
 				for (var index = topIndex; index <= bottomIndex; index++) {
 
-					selectContent.push(lyricsBox.lyricList.children[index].innerHTML);
+					lyricsBox.selectedContent.push(lyricsBox.lyricList.children[index].innerHTML);
 				}
-
-				lyricsBox.selectedContent = selectContent.join(' ');
 
 				if (lyricsBox.onselect) lyricsBox.onselect({
 					target: lyricsBox,
