@@ -80,6 +80,20 @@
 			});
 		});
 
+		shareButtons.renren.addEventListener('click', function (event) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			Share.renren({
+				url: 'http://douban.fm/?start=' + songInfo.startToken,
+				title: songInfo.title,
+				artist: songInfo.artist,
+				content: lyricsBox.selectedContent,
+				imageUrl: songInfo.albumImgUrl
+			});
+		});
+
 
 		// 歌词框控制
 

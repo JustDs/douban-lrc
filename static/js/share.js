@@ -46,6 +46,23 @@ Share = (function () {
 					'searchPic': 'false',
 				}
 			});
+		},
+		
+		renren: function (options) {
+
+			var title = (options.title || '') + ' - ' + (options.artist || '');
+
+			popupShareWindow({
+				baseUrl: 'http://widget.renren.com/dialog/share',
+				params: {
+					'resourceUrl': options.url || '',
+					'srcUrl': options.url || '',
+					'title': title,
+					'description': options.content || '',
+					'pic': options.imageUrl || '',
+					'charset': 'UTF-8',
+				}
+			});
 		}
 	};
 
