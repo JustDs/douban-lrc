@@ -73,6 +73,8 @@
 
 			Share.weibo({
 				url: 'http://douban.fm/?start=' + songInfo.startToken,
+				title: songInfo.title,
+				artist: songInfo.artist,
 				content: lyricsBox.selectedContent,
 				imageUrl: songInfo.albumImgUrl
 			});

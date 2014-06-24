@@ -31,13 +31,16 @@ Share = (function () {
 		
 		weibo: function (options) {
 
-			var weiboAppKey = 'http://app.weibo.com/t/feed/3Sgirk';
+			var weiboAppKey = '2403884134';
+
+			var content = (options.content || '') + ' —— ' +
+				 (options.artist || '') + '《' + (options.title || '') +'》';
 
 			popupShareWindow({
 				baseUrl: 'http://service.weibo.com/share/share.php',
 				params: {
 					'url': options.url || '',
-					'title': options.content || '',
+					'title': content,
 					'pic': options.imageUrl || '',
 					'appkey': weiboAppKey || '',
 					'searchPic': 'false',
