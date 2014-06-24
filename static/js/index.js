@@ -25,10 +25,10 @@
 
 		var shareBox = document.getElementById('share');
 		var shareButtons = {
-			weibo: document.getElementById('share-weibo'),
-			renren: document.getElementById('share-renren'),
-			douban: document.getElementById('share-douban'),
-			clipboard: document.getElementById('share-clipboard')
+			'weibo': document.getElementById('share-weibo'),
+			'renren': document.getElementById('share-renren'),
+			'douban': document.getElementById('share-douban'),
+			'clipboard': document.getElementById('share-clipboard')
 		};
 
 		// 当前播放的歌曲信息
@@ -66,33 +66,26 @@
 
 		// 歌词分享按钮控制
 
-		shareButtons.weibo.addEventListener('click', function (event) {
+		for (var target in shareButtons) {
 
-			event.preventDefault();
-			event.stopPropagation();
+			(function (target) {
 
-			Share.weibo({
-				url: 'http://douban.fm/?start=' + songInfo.startToken,
-				title: songInfo.title,
-				artist: songInfo.artist,
-				content: lyricsBox.selectedContent,
-				imageUrl: songInfo.albumImgUrl
-			});
-		});
+				shareButtons[target].addEventListener('click', function (event) {
 
-		shareButtons.renren.addEventListener('click', function (event) {
+					event.preventDefault();
+					event.stopPropagation();
 
-			event.preventDefault();
-			event.stopPropagation();
+					Share[target]({
+						url: 'http://douban.fm/?start=' + songInfo.startToken,
+						title: songInfo.title,
+						artist: songInfo.artist,
+						content: lyricsBox.selectedContent,
+						imageUrl: songInfo.albumImgUrl
+					});
+				});
 
-			Share.renren({
-				url: 'http://douban.fm/?start=' + songInfo.startToken,
-				title: songInfo.title,
-				artist: songInfo.artist,
-				content: lyricsBox.selectedContent,
-				imageUrl: songInfo.albumImgUrl
-			});
-		});
+			})(target);
+		}
 
 
 		// 歌词框控制

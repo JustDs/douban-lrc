@@ -29,7 +29,7 @@ Share = (function () {
 
 	return {
 		
-		weibo: function (options) {
+		'weibo': function (options) {
 
 			var weiboAppKey = '2403884134';
 
@@ -43,12 +43,12 @@ Share = (function () {
 					'title': content,
 					'pic': options.imageUrl || '',
 					'appkey': weiboAppKey || '',
-					'searchPic': 'false',
+					'searchPic': 'false'
 				}
 			});
 		},
 		
-		renren: function (options) {
+		'renren': function (options) {
 
 			var title = (options.title || '') + ' - ' + (options.artist || '');
 
@@ -60,9 +60,30 @@ Share = (function () {
 					'title': title,
 					'description': options.content || '',
 					'pic': options.imageUrl || '',
-					'charset': 'UTF-8',
+					'charset': 'UTF-8'
 				}
 			});
+		},
+		
+		'douban': function (options) {
+
+			var title = (options.title || '') + ' - ' + (options.artist || '');
+
+			popupShareWindow({
+				baseUrl: 'http://www.douban.com/share/service',
+				params: {
+					'href': options.url || '',
+					'name': title,
+					'text': options.content || '',
+					'image': options.imageUrl || '',
+					'bm': '1'
+				}
+			});
+		},
+		
+		'clipboard': function (options) {
+
+			;
 		}
 	};
 
