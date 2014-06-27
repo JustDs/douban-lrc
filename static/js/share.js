@@ -81,15 +81,6 @@ Share = (function () {
 					'bm': '1'
 				}
 			});
-		},
-		
-		'clipboard': function (options) {
-
-			setTimeout(function () {
-
-				if (options.callback) options.callback();
-
-			}, 800);
 		}
 	};
 

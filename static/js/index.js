@@ -6,6 +6,9 @@
 
 		var wrap = document.getElementById('wrap');
 
+		var popupBox = document.getElementById('popup');
+		var popupContent = document.getElementById('popup-content');
+
 		var songInfoBox = document.getElementById('song-info');
 		var title = document.getElementById('title');
 		var artist = document.getElementById('artist');
@@ -28,8 +31,8 @@
 			'weibo': document.getElementById('share-weibo'),
 			'renren': document.getElementById('share-renren'),
 			'douban': document.getElementById('share-douban'),
-			'clipboard': document.getElementById('share-clipboard')
 		};
+		var copyToClipboard = document.getElementById('share-clipboard');
 
 		// 当前播放的歌曲信息
 
@@ -93,9 +96,26 @@
 
 		ZeroClipboard.config({ swfPath: 'js/zero-clipboard/zero-clipboard.swf' });
 
-		new ZeroClipboard(shareButtons['clipboard']).on('copy', function (event) {
+		new ZeroClipboard(copyToClipboard).on('copy', function (event) {
 
 			event.clipboardData.setData('text/plain', lyricsBox.selectedContent.join('\n'));
+
+			popupContent.innerHTML = '歌词已复制到剪贴板';
+			popupBox.classList.remove('hidden');
+
+			setTimeout(function () {
+
+				popupBox.classList.add('hidden');
+
+			}, 1300);
+
+			setTimeout(foldShareBox, 400);
+		});
+
+		copyToClipboard.addEventListener('click', function (event) {
+
+			event.preventDefault();
+			event.stopPropagation();
 		});
 
 
